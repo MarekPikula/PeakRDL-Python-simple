@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "peakrdl_python"
+version = "0.1.0"
+description = "Export Python description from the systemrdl-compiler register model"
+authors = ["Marek Pikuła <marek.pikula at embevity.com>"]
+license = "GPL-3.0-only"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
+repository = "https://github.com/MarekPikula/PeakRDL-python"
+packages = [
+    { include = "peakrdl_python", from = "src"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.7.2"
+systemrdl-compiler = "^1.23.0"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.971"
+black = "^22.8.0"
+pydocstyle = "^6.1.1"
+pycodestyle = "^2.9.1"
+setuptools = "^65.3.0"
+isort = "^5.10.1"
+pre-commit = "^2.20.0"
+pylint = "^2.15.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"

@@ -1,0 +1,13 @@
+{
+    "python.linting.pylintEnabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.formatting.provider": "black",
+    "python.linting.pydocstyleEnabled": true,
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.pycodestyleArgs": [
+        "--ignore=E203,E402,E501,W503"
+    ],
+    "python.linting.pydocstyleArgs": ["--convention=pep257"],
+    "autoDocstring.docstringFormat": "pep257",
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
+}
