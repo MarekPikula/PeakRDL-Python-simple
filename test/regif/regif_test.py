@@ -13,7 +13,7 @@ def test_regif():
 @pytest.fixture
 def test_reg(test_regif: DummyRegIf) -> test_classes.TestReg:
     """Create test register definition."""
-    return test_classes.TestReg(test_regif)
+    return test_classes.TestReg(test_classes.TEST_REG_SPEC, test_regif)
 
 
 def test_read(test_reg: test_classes.TestReg):

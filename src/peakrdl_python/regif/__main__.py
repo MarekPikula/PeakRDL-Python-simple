@@ -19,26 +19,6 @@ class TestEnum(IntEnum):
 class TestReg(RegAccess):
     """Test register."""
 
-    _reg_spec = RegNodeSpec(
-        inst_name="test_reg",
-        type_name="int",
-        orig_type_name="int",
-        external=False,
-        raw_address_offset=0,
-        address_offset=0,
-        raw_absolute_address=0,
-        absolute_address=0,
-        size=1,
-        total_size=1,
-        virtual=False,
-        has_sw_writable=True,
-        has_sw_readable=True,
-        has_hw_writable=True,
-        has_hw_readable=True,
-        is_interrupt_reg=False,
-        is_halt_reg=False,
-    )
-
     test_field = FieldAccess(
         FieldNodeSpec(
             inst_name="test_field",
@@ -64,8 +44,29 @@ class TestReg(RegAccess):
     )
 
 
+TEST_REG_SPEC = RegNodeSpec(
+    inst_name="test_reg",
+    type_name="int",
+    orig_type_name="int",
+    external=False,
+    raw_address_offset=0,
+    address_offset=0,
+    raw_absolute_address=0,
+    absolute_address=0,
+    size=1,
+    total_size=1,
+    virtual=False,
+    has_sw_writable=True,
+    has_sw_readable=True,
+    has_hw_writable=True,
+    has_hw_readable=True,
+    is_interrupt_reg=False,
+    is_halt_reg=False,
+)
+
+
 if __name__ == "__main__":
-    test_reg = TestReg(DummyRegIf(4 * 8, range(0, 0x1000), 0))
+    test_reg = TestReg(TEST_REG_SPEC, DummyRegIf(4 * 8, range(0, 0x1000), 0))
 
     # Simple read using TestEnum.
     print(test_reg.test_field)

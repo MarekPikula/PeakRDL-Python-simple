@@ -3,10 +3,10 @@
 __authors__ = ["Marek Pikuła <marek.pikula at embevity.com>"]
 
 from abc import ABC
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, Optional, Type, TypeVar
 
 from .regif import RegisterInterface
-from .spec import FieldNodeSpec, RegNodeSpec
+from .spec import AddrmapNodeSpec, FieldNodeSpec, NodeSpec, RegNodeSpec
 
 T = TypeVar("T", bound=int)
 """Generic type used for `FieldAccess`.
@@ -15,7 +15,7 @@ Needs to be castable to and from int.
 """
 
 
-class FieldAccess(Generic[T], object):
+class FieldAccess(Generic[T]):
     """Field access Python interface.
 
     Field type is set as generic, but it needs to be castable to and from
@@ -92,30 +92,64 @@ class FieldAccess(Generic[T], object):
         )
 
 
-class RegAccess(ABC):
-    """Register access Python interface.
+SpecT = TypeVar("SpecT", bound=NodeSpec)
 
-    The children should have all the fields (`FieldAccess`) set as members.
-    """
 
-    _reg_spec: RegNodeSpec
-    """Register specification. Should be defined in child."""
+class AccessWithRegif(Generic[SpecT]):
+    """Generic access class with register interface and specification."""
 
-    def __init__(self, register_interface: RegisterInterface):
-        """Initialize register access interface.
+    def __init__(self, spec: SpecT, register_interface: Optional[RegisterInterface]):
+        """Initialize access interface.
 
         Arguments:
-            spec -- register node specification.
-            register_interface -- register interface.
+            spec -- node specification.
+            register_interface -- register interface. Can be set also by
+                setting the `regif` property. Propagates to all members.
         """
-        self._regif = register_interface
+        self._spec = spec
+        self._regif = None
+
+        if register_interface is not None:
+            self.regif = register_interface
 
     @property
-    def spec(self):
-        """Get register specification."""
-        return self._reg_spec
+    def spec(self) -> SpecT:
+        """Get the specification of the node."""
+        return self._spec
 
     @property
-    def regif(self):
+    def regif(self) -> RegisterInterface:
         """Get register interface."""
+        assert (
+            self._regif is not None
+        ), "RegisterInterface should be set in constructor or by constructor of parent."
         return self._regif
+
+    @regif.setter
+    def regif(self, regif: RegisterInterface):
+        """Set register interface and propagate to members.
+
+        Members need to be instances of AccessWithRegif itself.
+        """
+        self._regif = regif
+
+        for member_name in vars(self):
+            member = self.__dict__[member_name]
+            if isinstance(member, AccessWithRegif):
+                member.regif = regif
+
+
+class RegAccess(AccessWithRegif[RegNodeSpec], ABC):
+    """Register access Python interface.
+
+    The children of this class should have all the fields (`FieldAccess`) set
+    as members.
+    """
+
+
+class AddrmapAccess(AccessWithRegif[AddrmapNodeSpec], ABC):
+    """Address map access Python interface.
+
+    The children of this class should have all the SystemRDL children (either
+    RegAccess or AddrmapAccess) set as members.
+    """
