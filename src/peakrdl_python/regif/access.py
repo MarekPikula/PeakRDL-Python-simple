@@ -8,36 +8,6 @@ from typing import Any, Generic, Type, TypeVar
 from .regif import RegisterInterface
 from .spec import FieldNodeSpec, RegNodeSpec
 
-
-class RegAccess(ABC):
-    """Register access Python interface.
-
-    The children should have all the fields (`FieldAccess`) set as members.
-    """
-
-    _reg_spec: RegNodeSpec
-    """Register specification. Should be defined in child."""
-
-    def __init__(self, register_interface: RegisterInterface):
-        """Initialize register access interface.
-
-        Arguments:
-            spec -- register node specification.
-            register_interface -- register interface.
-        """
-        self._regif = register_interface
-
-    @property
-    def spec(self):
-        """Get register specification."""
-        return self._reg_spec
-
-    @property
-    def regif(self):
-        """Get register interface."""
-        return self._regif
-
-
 T = TypeVar("T", bound=int)
 """Generic type used for `FieldAccess`.
 
@@ -120,3 +90,32 @@ class FieldAccess(Generic[T], object):
             self._spec.width,
             int(value),
         )
+
+
+class RegAccess(ABC):
+    """Register access Python interface.
+
+    The children should have all the fields (`FieldAccess`) set as members.
+    """
+
+    _reg_spec: RegNodeSpec
+    """Register specification. Should be defined in child."""
+
+    def __init__(self, register_interface: RegisterInterface):
+        """Initialize register access interface.
+
+        Arguments:
+            spec -- register node specification.
+            register_interface -- register interface.
+        """
+        self._regif = register_interface
+
+    @property
+    def spec(self):
+        """Get register specification."""
+        return self._reg_spec
+
+    @property
+    def regif(self):
+        """Get register interface."""
+        return self._regif
