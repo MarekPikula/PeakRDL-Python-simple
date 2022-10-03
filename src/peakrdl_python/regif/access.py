@@ -55,7 +55,7 @@ class FieldAccess(Generic[T], object):
     TODO: Make field type be inferred from SystemRDL and generated.
     """
 
-    def __init__(self, spec: FieldNodeSpec, type: Type[T]):
+    def __init__(self, spec: FieldNodeSpec, field_type: Type[T]):
         """Initialize field access interface.
 
         Arguments:
@@ -64,7 +64,7 @@ class FieldAccess(Generic[T], object):
             type -- generic type of the field. Read more in the class description.
         """
         self._spec = spec
-        self._type = type
+        self._type = field_type
 
     def __get__(self, instance: Any, owner: Any) -> T:
         """Field getter.
