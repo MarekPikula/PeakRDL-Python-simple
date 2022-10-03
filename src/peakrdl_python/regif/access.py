@@ -6,7 +6,28 @@ from abc import ABC
 from typing import Any, Generic, Optional, Type, TypeVar
 
 from .regif import RegisterInterface
-from .spec import AddrmapNodeSpec, FieldNodeSpec, NodeSpec, RegNodeSpec
+from .spec import AddrmapNodeSpec, FieldNodeSpec, NodeSpec, RegfileNodeSpec, RegNodeSpec
+
+SpecT = TypeVar("SpecT", bound=NodeSpec)
+"""Node specification generic type."""
+
+
+class SpecMixin(Generic[SpecT]):
+    """Specification mixin.
+
+    `_spec` needs to be set in the final child class.
+    """
+
+    _spec: SpecT
+
+    @property
+    def spec(self) -> SpecT:
+        """Get the specification of the node."""
+        assert hasattr(
+            self, "_spec"
+        ), "SpecMixin requires programmer to set `_spec` member."
+        return self._spec
+
 
 T = TypeVar("T", bound=int)
 """Generic type used for `FieldAccess`.
@@ -15,26 +36,20 @@ Needs to be castable to and from int.
 """
 
 
-class FieldAccess(Generic[T]):
+class FieldAccess(Generic[T], SpecMixin[FieldNodeSpec], ABC):
     """Field access Python interface.
 
     Field type is set as generic, but it needs to be castable to and from
     `int` to work with the register interface. This means it can be, e.g.,
     `int` or any `IntEnum`.
 
+    Class child needs to set `_type` and `_spec` members.
+
     TODO: Make field type be inferred from SystemRDL and generated.
     """
 
-    def __init__(self, spec: FieldNodeSpec, field_type: Type[T]):
-        """Initialize field access interface.
-
-        Arguments:
-            spec -- field specification. Used to ensure that the access rules
-                defined in SystemRDL source are being followed.
-            type -- generic type of the field. Read more in the class description.
-        """
-        self._spec = spec
-        self._type = field_type
+    _type: Type[T]
+    """Needs to be set in class child."""
 
     def __get__(self, instance: Any, owner: Any) -> T:
         """Field getter.
@@ -92,13 +107,10 @@ class FieldAccess(Generic[T]):
         )
 
 
-SpecT = TypeVar("SpecT", bound=NodeSpec)
-
-
-class AccessWithRegif(Generic[SpecT]):
+class AccessWithRegifMixin:
     """Generic access class with register interface and specification."""
 
-    def __init__(self, spec: SpecT, register_interface: Optional[RegisterInterface]):
+    def __init__(self, register_interface: Optional[RegisterInterface]):
         """Initialize access interface.
 
         Arguments:
@@ -106,16 +118,10 @@ class AccessWithRegif(Generic[SpecT]):
             register_interface -- register interface. Can be set also by
                 setting the `regif` property. Propagates to all members.
         """
-        self._spec = spec
         self._regif = None
 
         if register_interface is not None:
             self.regif = register_interface
-
-    @property
-    def spec(self) -> SpecT:
-        """Get the specification of the node."""
-        return self._spec
 
     @property
     def regif(self) -> RegisterInterface:
@@ -135,21 +141,31 @@ class AccessWithRegif(Generic[SpecT]):
 
         for member_name in vars(self):
             member = self.__dict__[member_name]
-            if isinstance(member, AccessWithRegif):
+            if isinstance(member, AccessWithRegifMixin):
                 member.regif = regif
 
 
-class RegAccess(AccessWithRegif[RegNodeSpec], ABC):
+class RegAccess(AccessWithRegifMixin, SpecMixin[RegNodeSpec], ABC):
     """Register access Python interface.
 
     The children of this class should have all the fields (`FieldAccess`) set
-    as members.
+    as members and `_spec` set to instance of RegNodeSpec.
     """
 
 
-class AddrmapAccess(AccessWithRegif[AddrmapNodeSpec], ABC):
+class AddrmapAccess(AccessWithRegifMixin, SpecMixin[AddrmapNodeSpec], ABC):
     """Address map access Python interface.
 
     The children of this class should have all the SystemRDL children (either
-    RegAccess or AddrmapAccess) set as members.
+    RegAccess or AddrmapAccess) set as members and `_spec` set to instance of
+    AddrmapNodeSpec.
+    """
+
+
+class RegfileAccess(AccessWithRegifMixin, SpecMixin[RegfileNodeSpec], ABC):
+    """Register file access Python interface.
+
+    The children of this class should have all the SystemRDL children (either
+    RegAccess or AddrmapAccess) set as members and `_spec` set to instance of
+    RegfileSpec.
     """
