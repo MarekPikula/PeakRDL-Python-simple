@@ -1,0 +1,13 @@
+[paths]
+source =
+    src/peakrdl_python_simple
+    */site-packages/*/peakrdl_python_simple
+    */site-packages/peakrdl_python_simple
+
+[report]
+exclude_lines =
+    pragma: no cover
+    raise RuntimeError
+    raise NotImplementedError
+    msg.fatal
+    msg.error
