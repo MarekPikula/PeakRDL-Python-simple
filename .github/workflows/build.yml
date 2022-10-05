@@ -46,3 +46,57 @@ jobs:
         run: |
           echo "repo_token: ${GITHUB_TOKEN}" > .coveralls.yml
           poetry run coveralls --service=github
+
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.2.1"
+      - name: Install dependencies
+        run: poetry install
+      - name: Run formatter
+        run: |
+          poetry run black --check --diff src/ test/
+
+  pydocstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.2.1"
+      - name: Install dependencies
+        run: poetry install
+      - name: Run formatter
+        run: |
+          poetry run pydocstyle --convention=pep257 src/
+
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.2.1"
+      - name: Install dependencies
+        run: poetry install
+      - name: Run formatter
+        run: |
+          poetry run mypy src/
