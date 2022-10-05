@@ -1,7 +1,7 @@
 import pytest
 
-from peakrdl_python.regif import __main__ as test_classes
-from peakrdl_python.regif.regif import DummyRegIf
+from peakrdl_python_simple.regif import __main__ as test_classes
+from peakrdl_python_simple.regif.regif import DummyRegIf
 
 
 @pytest.fixture

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "peakrdl_python"
+name = "peakrdl_python_simple"
 version = "0.1.0"
 description = "Export Python description from the systemrdl-compiler register model"
 authors = ["Marek Pikuła <marek.pikula at embevity.com>"]
@@ -12,7 +12,7 @@ classifiers = [
 ]
 repository = "https://github.com/MarekPikula/PeakRDL-python"
 packages = [
-    { include = "peakrdl_python", from = "src"}
+    { include = "peakrdl_python_simple", from = "src"}
 ]
 
 [tool.poetry.dependencies]
@@ -37,7 +37,7 @@ sphinx-rtd-theme = "^1.0.0"
 peakrdl = "^0.3.0"
 
 [tool.poetry.plugins."peakrdl.exporters"]
-"python" = "peakrdl_python.__peakrdl__:Exporter"
+"python" = "peakrdl_python_simple.__peakrdl__:Exporter"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

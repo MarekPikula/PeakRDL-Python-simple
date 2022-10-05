@@ -78,7 +78,7 @@ class PythonExporter:
                     '"""Python abstraction for SystemRDL register description.\n\n'
                     f"Generated from {top_name}. Don't override.\n"
                     '"""\n\n'
-                    "from peakrdl_python.regif import spec, access\n"
+                    "from peakrdl_python_simple.regif import spec, access\n"
                 )
                 + self._add_addrmap_regfile(
                     top, node.env.msg, is_top=True

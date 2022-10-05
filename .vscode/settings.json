@@ -13,7 +13,7 @@
     "python.envFile": "${workspaceFolder}/.env",
     "python.testing.pytestArgs": [
         "test/",
-        "--cov=peakrdl_python",
+        "--cov=peakrdl_python_simple",
         "--cov-report=term",
         "--cov-report=xml:output/coverage/cov.xml",
         "--cov-report=html:output/coverage/html",
