@@ -191,6 +191,40 @@ python-versions = "*"
 six = "*"
 
 [[package]]
+name = "git-me-the-url"
+version = "2.0.3"
+description = "Generate sharable links to your Git source"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+gitpython = "*"
+
+[[package]]
+name = "gitdb"
+version = "4.0.9"
+description = "Git Object Database"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+smmap = ">=3.0.1,<6"
+
+[[package]]
+name = "GitPython"
+version = "3.1.27"
+description = "GitPython is a python library used to interact with Git repositories"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+gitdb = ">=4.0.1,<5"
+typing-extensions = {version = ">=3.7.4.3", markers = "python_version < \"3.8\""}
+
+[[package]]
 name = "identify"
 version = "2.5.6"
 description = "File identification library for Python"
@@ -378,6 +412,71 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "peakrdl"
+version = "0.3.0"
+description = "Command-line tool for control/status register automation"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+peakrdl-html = ">=2.7.0"
+peakrdl-ipxact = ">=3.2.0"
+peakrdl-regblock = ">=0.6.0"
+peakrdl-uvm = ">=2.2.0"
+systemrdl-compiler = ">=1.23.0"
+
+[[package]]
+name = "peakrdl-html"
+version = "2.8.0"
+description = "HTML documentation generator for SystemRDL-based register models"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+git-me-the-url = ">=2.0.3"
+Jinja2 = ">=2.9"
+markdown = "*"
+python-markdown-math = "*"
+systemrdl-compiler = ">=1.13.0"
+
+[[package]]
+name = "peakrdl-ipxact"
+version = "3.2.2"
+description = "Import and export IP-XACT XML to/from the systemrdl-compiler register model"
+category = "dev"
+optional = false
+python-versions = ">=3.5.2"
+
+[package.dependencies]
+systemrdl-compiler = ">=1.24.0"
+
+[[package]]
+name = "peakrdl-regblock"
+version = "0.7.0"
+description = "Compile SystemRDL into a SystemVerilog control/status register (CSR) block"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+Jinja2 = ">=2.11"
+systemrdl-compiler = ">=1.23.0"
+
+[[package]]
+name = "peakrdl-uvm"
+version = "2.2.0"
+description = "Generate UVM register model from compiled SystemRDL input"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+jinja2 = "*"
+systemrdl-compiler = ">=1.12.0"
+
+[[package]]
 name = "platformdirs"
 version = "2.5.2"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -544,6 +643,17 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
+name = "python-markdown-math"
+version = "0.8"
+description = "Math extension for Python-Markdown"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+Markdown = ">=3.0"
+
+[[package]]
 name = "pytz"
 version = "2022.4"
 description = "World timezone definitions, modern and historical"
@@ -597,6 +707,14 @@ description = "Python 2 and 3 compatibility utilities"
 category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
+name = "smmap"
+version = "5.0.0"
+description = "A pure Python implementation of a sliding window memory map manager"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
 
 [[package]]
 name = "snowballstemmer"
@@ -831,7 +949,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.2"
-content-hash = "7f4e1d69187a785926928a60b4eb7a0fc2e4cf05e52f47dbe8a3c7d403a471b2"
+content-hash = "6b0f6c9baeb39b9f6e52682a00a29d26cfed0f2a7278af3aa3f19eadd78cc2fd"
 
 [metadata.files]
 alabaster = [
@@ -969,6 +1087,17 @@ filelock = [
 fspath = [
     {file = "fspath-20190323-py2.py3-none-any.whl", hash = "sha256:4e7e28df6f27b3cbf41361ce45e9ecbf6c566bdc13834318cf1166c3eede7c6f"},
     {file = "fspath-20190323.tar.gz", hash = "sha256:96cbccd374709fcbc64d3fd5eafb2072b728ce59a1b75c9b4661c82f7acbd970"},
+]
+git-me-the-url = [
+    {file = "git-me-the-url-2.0.3.tar.gz", hash = "sha256:e749b3d3230013e72a76dfab8858cba8c33c874456ab33743acebe0af93a9315"},
+]
+gitdb = [
+    {file = "gitdb-4.0.9-py3-none-any.whl", hash = "sha256:8033ad4e853066ba6ca92050b9df2f89301b8fc8bf7e9324d412a63f8bf1a8fd"},
+    {file = "gitdb-4.0.9.tar.gz", hash = "sha256:bac2fd45c0a1c9cf619e63a90d62bdc63892ef92387424b855792a6cabe789aa"},
+]
+GitPython = [
+    {file = "GitPython-3.1.27-py3-none-any.whl", hash = "sha256:5b68b000463593e05ff2b261acff0ff0972df8ab1b70d3cdbd41b546c8b8fc3d"},
+    {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 identify = [
     {file = "identify-2.5.6-py2.py3-none-any.whl", hash = "sha256:b276db7ec52d7e89f5bc4653380e33054ddc803d25875952ad90b0f012cbcdaa"},
@@ -1132,6 +1261,21 @@ pathspec = [
     {file = "pathspec-0.10.1-py3-none-any.whl", hash = "sha256:46846318467efc4556ccfd27816e004270a9eeeeb4d062ce5e6fc7a87c573f93"},
     {file = "pathspec-0.10.1.tar.gz", hash = "sha256:7ace6161b621d31e7902eb6b5ae148d12cfd23f4a249b9ffb6b9fee12084323d"},
 ]
+peakrdl = [
+    {file = "peakrdl-0.3.0.tar.gz", hash = "sha256:d07737c5f7a2a8f764468c90ede3b1187209876c23e58efba1fd7d4c1bb881ba"},
+]
+peakrdl-html = [
+    {file = "peakrdl-html-2.8.0.tar.gz", hash = "sha256:075045057cd5e24b96f332fb44e23ac94a533bba14909143df33da6727bd374f"},
+]
+peakrdl-ipxact = [
+    {file = "peakrdl-ipxact-3.2.2.tar.gz", hash = "sha256:2fed8672181599467c9b6dafea67a6de15770c496a80f36d90b1cbc196b234b1"},
+]
+peakrdl-regblock = [
+    {file = "peakrdl-regblock-0.7.0.tar.gz", hash = "sha256:f2b112ef0fe01270de2bde807ce13ef1ae0211ab9d9d4ee5331bb13e11aeb783"},
+]
+peakrdl-uvm = [
+    {file = "peakrdl-uvm-2.2.0.tar.gz", hash = "sha256:c42c9b7561e87dc4944c7f2f256e77ebb3133b4c94246a5f17a58b8088a79194"},
+]
 platformdirs = [
     {file = "platformdirs-2.5.2-py3-none-any.whl", hash = "sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788"},
     {file = "platformdirs-2.5.2.tar.gz", hash = "sha256:58c8abb07dcb441e6ee4b11d8df0ac856038f944ab98b7be6b27b2a3c7feef19"},
@@ -1178,6 +1322,10 @@ pytest = [
 pytest-cov = [
     {file = "pytest-cov-4.0.0.tar.gz", hash = "sha256:996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470"},
     {file = "pytest_cov-4.0.0-py3-none-any.whl", hash = "sha256:2feb1b751d66a8bd934e5edfa2e961d11309dc37b73b0eabe73b5945fee20f6b"},
+]
+python-markdown-math = [
+    {file = "python-markdown-math-0.8.tar.gz", hash = "sha256:8564212af679fc18d53f38681f16080fcd3d186073f23825c7ce86fadd3e3635"},
+    {file = "python_markdown_math-0.8-py3-none-any.whl", hash = "sha256:c685249d84b5b697e9114d7beb352bd8ca2e07fd268fd4057ffca888c14641e5"},
 ]
 pytz = [
     {file = "pytz-2022.4-py2.py3-none-any.whl", hash = "sha256:2c0784747071402c6e99f0bafdb7da0fa22645f06554c7ae06bf6358897e9c91"},
@@ -1236,6 +1384,10 @@ setuptools = [
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
+]
+smmap = [
+    {file = "smmap-5.0.0-py3-none-any.whl", hash = "sha256:2aba19d6a040e78d8b09de5c57e96207b09ed71d8e55ce0959eeee6c8e190d94"},
+    {file = "smmap-5.0.0.tar.gz", hash = "sha256:c840e62059cd3be204b0c9c9f74be2c09d5648eddd4580d9314c3ecde0b30936"},
 ]
 snowballstemmer = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
