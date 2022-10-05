@@ -30,7 +30,8 @@
 				"bungcip.better-toml",
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"njpwerner.autodocstring"
+				"njpwerner.autodocstring",
+				"ryanluker.vscode-coverage-gutters"
 			]
 		}
 	},
