@@ -105,20 +105,15 @@ class RegNodeSpec(AddressableNodeSpec):
 class RegfileNodeSpec(AddressableNodeSpec):
     """Specification of systemrdl.node.RegfileNode."""
 
-    size: int
-
 
 @dataclass(frozen=True)
 class AddrmapNodeSpec(AddressableNodeSpec):
     """Specification of systemrdl.node.AddrmapNode."""
-
-    size: int
 
 
 @dataclass(frozen=True)
 class MemNodeSpec(AddressableNodeSpec):
     """Specification of systemrdl.node.MemNode."""
 
-    size: int
     is_sw_writable: bool
     is_sw_readable: bool
