@@ -15,16 +15,24 @@ SpecT = TypeVar("SpecT", bound=NodeSpec)
 class SpecMixin(Generic[SpecT]):
     """Specification mixin.
 
-    `_spec` needs to be set in the final child class.
+    `_spec` can be set in the constructor or in the final child class.
     """
 
-    _spec: SpecT
+    def __init__(self, specification: Optional[SpecT] = None):
+        """Initialize class with specification.
+
+        Arguments:
+            specification -- Node specification. Can be set to None, but then
+                `_spec` class member needs to be set explicitly in the child
+                class declaration.
+        """
+        self._spec = specification
 
     @property
     def spec(self) -> SpecT:
         """Get the specification of the node."""
-        assert hasattr(
-            self, "_spec"
+        assert (
+            self._spec is not None
         ), "SpecMixin requires programmer to set `_spec` member."
         return self._spec
 
@@ -43,13 +51,18 @@ class FieldAccess(Generic[T], SpecMixin[FieldNodeSpec], ABC):
     `int` to work with the register interface. This means it can be, e.g.,
     `int` or any `IntEnum`.
 
-    Class child needs to set `_type` and `_spec` members.
-
     TODO: Make field type be inferred from SystemRDL and generated.
     """
 
-    _type: Type[T]
-    """Needs to be set in class child."""
+    def __init__(self, specification: FieldNodeSpec, field_type: Type[T]):
+        """Field interface access.
+
+        Arguments:
+            specification -- field specification.
+            field_type -- Python type of the data stored in the field.
+        """
+        super().__init__(specification)
+        self._type = field_type
 
     def __get__(self, instance: Any, owner: Any) -> T:
         """Field getter.
@@ -67,12 +80,12 @@ class FieldAccess(Generic[T], SpecMixin[FieldNodeSpec], ABC):
             instance, RegAccess
         ), "FieldAccess needs to be used as a member of RegAccess."
 
-        if not self._spec.is_sw_readable:
-            raise RuntimeError(f"Field {self._spec.inst_name} is not SW readable.")
+        if not self.spec.is_sw_readable:
+            raise RuntimeError(f"Field {self.spec.inst_name} is not SW readable.")
 
         return self._type(
             instance.regif.get_field(
-                instance.spec.absolute_address, self._spec.lsb, self._spec.width
+                instance.spec.absolute_address, self.spec.lsb, self.spec.width
             )
         )
 
@@ -96,13 +109,13 @@ class FieldAccess(Generic[T], SpecMixin[FieldNodeSpec], ABC):
         if not isinstance(value, self._type):
             value = self._type(value)
 
-        if not self._spec.is_sw_writable:
-            raise RuntimeError(f"Field {self._spec.inst_name} is not SW writable.")
+        if not self.spec.is_sw_writable:
+            raise RuntimeError(f"Field {self.spec.inst_name} is not SW writable.")
 
         instance.regif.set_field(
             instance.spec.absolute_address,
-            self._spec.lsb,
-            self._spec.width,
+            self.spec.lsb,
+            self.spec.width,
             int(value),
         )
 
@@ -145,7 +158,34 @@ class AccessWithRegifMixin:
                 member.regif = regif
 
 
-class RegAccess(AccessWithRegifMixin, SpecMixin[RegNodeSpec], ABC):
+class HierarchicalAccess(Generic[SpecT], AccessWithRegifMixin, SpecMixin[SpecT], ABC):
+    """Hierarchical block access interface.
+
+    Arguments:
+        SpecT -- Node specification.
+    """
+
+    def __init__(
+        self,
+        register_interface: Optional[RegisterInterface] = None,
+        specification: Optional[SpecT] = None,
+    ):
+        """Initialize the hierarchical access block.
+
+        It's merging `AccessWithRegifMixin` and `SpecMixin` initializers.
+
+        Keyword Arguments:
+            register_interface -- register interface. Can be set also by
+                setting the `regif` property. Propagates to all members.
+            specification -- node specification. Can be also set by setting
+                `_spec` child class member.
+        """
+        AccessWithRegifMixin.__init__(self, register_interface)
+        # TODO: Figure out why mypy doesn't like it:
+        SpecMixin[SpecT].__init__(self, specification)  # type: ignore
+
+
+class RegAccess(HierarchicalAccess[RegNodeSpec], ABC):
     """Register access Python interface.
 
     The children of this class should have all the fields (`FieldAccess`) set
@@ -153,7 +193,7 @@ class RegAccess(AccessWithRegifMixin, SpecMixin[RegNodeSpec], ABC):
     """
 
 
-class AddrmapAccess(AccessWithRegifMixin, SpecMixin[AddrmapNodeSpec], ABC):
+class AddrmapAccess(HierarchicalAccess[AddrmapNodeSpec], ABC):
     """Address map access Python interface.
 
     The children of this class should have all the SystemRDL children (either
@@ -162,7 +202,7 @@ class AddrmapAccess(AccessWithRegifMixin, SpecMixin[AddrmapNodeSpec], ABC):
     """
 
 
-class RegfileAccess(AccessWithRegifMixin, SpecMixin[RegfileNodeSpec], ABC):
+class RegfileAccess(HierarchicalAccess[RegfileNodeSpec], ABC):
     """Register file access Python interface.
 
     The children of this class should have all the SystemRDL children (either

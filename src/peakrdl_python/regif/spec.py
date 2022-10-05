@@ -87,7 +87,7 @@ class FieldNodeSpec(VectorNodeSpec):
 class RegNodeSpec(AddressableNodeSpec):
     """Specification of systemrdl.node.RegNode."""
 
-    virtual: bool
+    is_virtual: bool
     has_sw_writable: bool
     has_sw_readable: bool
     has_hw_writable: bool

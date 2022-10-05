@@ -16,30 +16,6 @@ class TestEnum(IntEnum):
     VALUE_4 = 4
 
 
-class TestField(FieldAccess[TestEnum]):
-    _type = TestEnum
-    _spec = FieldNodeSpec(
-        inst_name="test_field",
-        type_name="TestEnum",
-        orig_type_name="TestEnum",
-        external=False,
-        width=3,
-        msb=12,
-        lsb=10,
-        high=12,
-        low=10,
-        is_virtual=False,
-        is_volatile=False,
-        is_sw_writable=True,
-        is_sw_readable=True,
-        is_hw_writable=True,
-        is_hw_readable=True,
-        implements_storage=True,
-        is_up_counter=False,
-        is_down_counter=False,
-    )
-
-
 class TestReg(RegAccess):
     """Test register."""
 
@@ -54,7 +30,7 @@ class TestReg(RegAccess):
         absolute_address=0,
         size=1,
         total_size=1,
-        virtual=False,
+        is_virtual=False,
         has_sw_writable=True,
         has_sw_readable=True,
         has_hw_writable=True,
@@ -63,7 +39,29 @@ class TestReg(RegAccess):
         is_halt_reg=False,
     )
 
-    test_field = TestField()
+    test_field = FieldAccess(
+        FieldNodeSpec(
+            inst_name="test_field",
+            type_name="TestEnum",
+            orig_type_name="TestEnum",
+            external=False,
+            width=3,
+            msb=12,
+            lsb=10,
+            high=12,
+            low=10,
+            is_virtual=False,
+            is_volatile=False,
+            is_sw_writable=True,
+            is_sw_readable=True,
+            is_hw_writable=True,
+            is_hw_readable=True,
+            implements_storage=True,
+            is_up_counter=False,
+            is_down_counter=False,
+        ),
+        TestEnum,
+    )
 
 
 if __name__ == "__main__":
