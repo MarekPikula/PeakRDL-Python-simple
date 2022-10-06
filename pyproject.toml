@@ -3,14 +3,17 @@ name = "peakrdl_python_simple"
 version = "0.1.0"
 description = "Export Python description from the systemrdl-compiler register model"
 authors = ["Marek Pikuła <marek.pikula@embevity.com>"]
+maintainers = ["Marek Pikuła <marek.pikula@embevity.com>"]
 license = "GPL-3.0-only"
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
 ]
-repository = "https://github.com/MarekPikula/PeakRDL-python"
+repository = "https://github.com/MarekPikula/PeakRDL-Python-simple"
+documentation = "https://peakrdl-python-simple.readthedocs.io"
+readme = "README.md"
 packages = [
     { include = "peakrdl_python_simple", from = "src"}
 ]
