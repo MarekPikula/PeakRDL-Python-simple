@@ -31,7 +31,8 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"njpwerner.autodocstring",
-				"ryanluker.vscode-coverage-gutters"
+				"ryanluker.vscode-coverage-gutters",
+				"mhutchie.git-graph",
 			]
 		}
 	},
