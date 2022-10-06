@@ -72,9 +72,31 @@ jobs:
       - name: Run formatter
         run: poetry run ${{ matrix.tool }} src/ test/
 
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.2.1"
+      - name: Install dependencies
+        run: poetry install
+      - name: Build docs
+        run: poetry run make -C docs/ html
+      - name: Upload the built package
+        uses: actions/upload-artifact@v2
+        with:
+          path: docs/_build/
+
   build-publish:
     needs:
       - test
+      - build-docs
       - lint
     name: Build source distribution
     runs-on: ubuntu-latest
