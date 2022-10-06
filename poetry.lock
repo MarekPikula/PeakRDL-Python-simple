@@ -218,7 +218,7 @@ six = "*"
 name = "git-me-the-url"
 version = "2.0.3"
 description = "Generate sharable links to your Git source"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -229,7 +229,7 @@ gitpython = "*"
 name = "gitdb"
 version = "4.0.9"
 description = "Git Object Database"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -240,7 +240,7 @@ smmap = ">=3.0.1,<6"
 name = "GitPython"
 version = "3.1.27"
 description = "GitPython is a python library used to interact with Git repositories"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -318,7 +318,7 @@ requirements_deprecated_finder = ["pip-api", "pipreqs"]
 name = "Jinja2"
 version = "3.1.2"
 description = "A very fast and expressive template engine."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -366,7 +366,7 @@ testing = ["coverage", "pyyaml"]
 name = "MarkupSafe"
 version = "2.1.1"
 description = "Safely add untrusted strings to HTML/XML markup."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -439,7 +439,7 @@ python-versions = ">=3.7"
 name = "peakrdl"
 version = "0.3.0"
 description = "Command-line tool for control/status register automation"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -454,7 +454,7 @@ systemrdl-compiler = ">=1.23.0"
 name = "peakrdl-html"
 version = "2.8.0"
 description = "HTML documentation generator for SystemRDL-based register models"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -469,7 +469,7 @@ systemrdl-compiler = ">=1.13.0"
 name = "peakrdl-ipxact"
 version = "3.2.2"
 description = "Import and export IP-XACT XML to/from the systemrdl-compiler register model"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5.2"
 
@@ -480,7 +480,7 @@ systemrdl-compiler = ">=1.24.0"
 name = "peakrdl-regblock"
 version = "0.7.0"
 description = "Compile SystemRDL into a SystemVerilog control/status register (CSR) block"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -492,7 +492,7 @@ systemrdl-compiler = ">=1.23.0"
 name = "peakrdl-uvm"
 version = "2.2.0"
 description = "Generate UVM register model from compiled SystemRDL input"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -670,7 +670,7 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 name = "python-markdown-math"
 version = "0.8"
 description = "Math extension for Python-Markdown"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -736,7 +736,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "smmap"
 version = "5.0.0"
 description = "A pure Python implementation of a sliding window memory map manager"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -970,10 +970,13 @@ python-versions = ">=3.7"
 docs = ["jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx"]
 testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)"]
 
+[extras]
+cli = ["peakrdl"]
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.2"
-content-hash = "28e369d55152d34ebed7d0c418b0947171d49e613509a9b442a62ab211b4e54e"
+content-hash = "9dc0aeb38fb3aa16d5130e3cc5fc1db089c0b85b1fc2efe0f16186198b5564c2"
 
 [metadata.files]
 alabaster = [

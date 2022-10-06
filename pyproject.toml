@@ -18,6 +18,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.7.2"
 systemrdl-compiler = "^1.23.0"
+peakrdl = { version = "^0.3.0", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^0.971"
@@ -34,8 +35,11 @@ Sphinx = "^5.2.3"
 pygments-systemrdl = "^1.2.0"
 linuxdoc = "^20211220"
 sphinx-rtd-theme = "^1.0.0"
-peakrdl = "^0.3.0"
 coveralls = "^3.3.1"
+peakrdl = "^0.3.0"
+
+[tool.poetry.extras]
+cli = ["peakrdl"]
 
 [tool.poetry.plugins."peakrdl.exporters"]
 "python" = "peakrdl_python_simple.__peakrdl__:Exporter"
