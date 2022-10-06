@@ -32,7 +32,7 @@ The module integrates with PeakRDL CLI interface (via optional extra ``cli``):
 
 .. code-block:: bash
 
-    peakrdl python input_file.rdl -o output_interface.py
+    peakrdl python-simple input_file.rdl -o output_interface.py
 
 
 Links
