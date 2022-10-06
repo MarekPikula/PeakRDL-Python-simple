@@ -26,5 +26,5 @@ Then this package can be used with the following command:
 
 ## Documentation
 
-See the [PeakRDL-Python Documentation](http://peakrdl-python.readthedocs.io)
-for more details.
+See the [PeakRDL-Python-simple
+Documentation](http://peakrdl-python-simple.readthedocs.io) for more details.
