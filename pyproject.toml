@@ -2,7 +2,7 @@
 name = "peakrdl_python_simple"
 version = "0.1.0"
 description = "Export Python description from the systemrdl-compiler register model"
-authors = ["Marek Pikuła <marek.pikula at embevity.com>"]
+authors = ["Marek Pikuła <marek.pikula@embevity.com>"]
 license = "GPL-3.0-only"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
