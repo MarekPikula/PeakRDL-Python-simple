@@ -1,61 +1,47 @@
 Introduction
 ============
 
-This package implements Python register abstraction layer export for the
-PeakRDL toolchain.
+This package implements a simple Python register abstraction layer export for
+the PeakRDL toolchain.
 
 
 Installing
 ----------
 
-Install from `PyPi`_ using pip
+Install from `PyPi`_ using pip:
 
 .. code-block:: bash
 
-    python3 -m pip install peakrdl-python
+    python3 -m pip install peakrdl-python-simple
 
-.. _PyPi: https://pypi.org/project/peakrdl-python
+.. _PyPi: https://pypi.org/project/peakrdl-python-simple
 
+If you want to use official PeakRDL CLI you can install with ``cli`` extra:
 
+.. code-block:: bash
+
+    python3 -m pip install peakrdl-python-simple[cli]
 
 Quick Start
 -----------
 
-Exporting to IP-XACT
-^^^^^^^^^^^^^^^^^^^^
+Exporting to Python interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Below is a simple example that shows how to convert a SystemRDL register model
-into IP-XACT.
+The module integrates with PeakRDL CLI interface (via optional extra ``cli``):
 
-.. code-block:: python
-    :emphasize-lines: 3, 13-15, 17
+.. code-block:: bash
 
-    import sys
-    from systemrdl import RDLCompiler, RDLCompileError
-    from peakrdl_ipxact import IPXACTExporter, Standard
-
-    rdlc = RDLCompiler()
-
-    try:
-        rdlc.compile_file("path/to/my.rdl")
-        root = rdlc.elaborate()
-    except RDLCompileError:
-        sys.exit(1)
-
-    exporter = IPXACTExporter(
-        standard=Standard.IEEE_1685_2014
-    )
-
-    exporter.export(root, "path/to/output.xml")
+    peakrdl python input_file.rdl -o output_interface.py
 
 
 Links
 -----
 
-- `Source repository <https://github.com/MarekPikula/PeakRDL-Python>`_
-- `Release Notes <https://github.com/MarekPikula/PeakRDL-Python/releases>`_
-- `Issue tracker <https://github.com/MarekPikula/PeakRDL-Python/issues>`_
-- `PyPi <https://pypi.org/project/peakrdl-python>`_
+- `Source repository <https://github.com/MarekPikula/PeakRDL-Python-simple>`_
+- `Release Notes <https://github.com/MarekPikula/PeakRDL-Python-simple/releases>`_
+- `Issue tracker <https://github.com/MarekPikula/PeakRDL-Python-simple/issues>`_
+- `PyPi <https://pypi.org/project/peakrdl-python-simple>`_
 
 
 
@@ -63,5 +49,3 @@ Links
     :hidden:
 
     self
-    importer
-    exporter
