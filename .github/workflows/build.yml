@@ -88,7 +88,7 @@ jobs:
         run: poetry install
       - name: Build docs
         run: poetry run make -C docs/ html
-      - name: Upload the built package
+      - name: Upload the built documentation
         uses: actions/upload-artifact@v2
         with:
           path: docs/_build/
