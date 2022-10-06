@@ -52,19 +52,14 @@ class VectorNodeSpec(NodeSpec):
 class RootNodeSpec(NodeSpec):
     """Specification of systemrdl.node.RootNode."""
 
-    # top: "AddrmapNodeSpec"
-    pass
-
 
 @dataclass(frozen=True)
 class SignalNodeSpec(VectorNodeSpec):
     """Specification of systemrdl.node.SignalNode."""
 
-    pass
-
 
 @dataclass(frozen=True)
-class FieldNodeSpec(VectorNodeSpec):
+class FieldNodeSpec(VectorNodeSpec):  # pylint: disable=too-many-instance-attributes
     """Specification of systemrdl.node.FieldNode."""
 
     is_virtual: bool

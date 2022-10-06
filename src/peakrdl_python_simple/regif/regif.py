@@ -208,7 +208,7 @@ class DummyRegIf(RegisterInterface):
             Register value.
         """
         super().get(reg_address)
-        if reg_address not in self._values.keys():
+        if reg_address not in self._values:
             return self._reset_value
         return self._values[reg_address]
 

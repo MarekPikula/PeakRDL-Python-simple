@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from systemrdl.node import AddrmapNode, RootNode  # type: ignore
 
 
-class Exporter:
+class Exporter:  # pylint: disable=too-few-public-methods
     """PeakRDL Python exporter plug-in."""
 
     short_desc = "Export the register model to Python"

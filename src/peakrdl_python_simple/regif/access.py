@@ -12,7 +12,7 @@ SpecT = TypeVar("SpecT", bound=NodeSpec)
 """Node specification generic type."""
 
 
-class SpecMixin(Generic[SpecT]):
+class SpecMixin(Generic[SpecT]):  # pylint: disable=too-few-public-methods
     """Specification mixin.
 
     `_spec` can be set in the constructor or in the final child class.
@@ -120,7 +120,7 @@ class FieldAccess(Generic[T], SpecMixin[FieldNodeSpec], ABC):
         )
 
 
-class AccessWithRegifMixin:
+class AccessWithRegifMixin:  # pylint: disable=too-few-public-methods
     """Generic access class with register interface and specification."""
 
     def __init__(self, register_interface: Optional[RegisterInterface]):

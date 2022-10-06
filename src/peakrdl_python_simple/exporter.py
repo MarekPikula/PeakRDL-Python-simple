@@ -19,7 +19,7 @@ from systemrdl.node import (  # type: ignore
 )
 
 
-class PythonExporter:
+class PythonExporter:  # pylint: disable=too-few-public-methods
     """PeakRDL Python exporter main class."""
 
     SpecList = List[Any]
@@ -210,7 +210,7 @@ class PythonExporter:
                 return type_name, ""
             self._existing_types.append(type_name)
 
-        generic = f"[int]" if isinstance(node, FieldNode) else ""
+        generic = "[int]" if isinstance(node, FieldNode) else ""
         gen = (
             f"\n\nclass {type_name}(access.{node_type}Access{generic}):"
             + self._generate_docstring(node, 4, True)
@@ -323,7 +323,11 @@ class PythonExporter:
         type_name, gen_node = self._format_class(node, member_list=members)
         return PythonExporter.GenStageOutput(node, type_name, spec, gen + gen_node)
 
-    def _add_field(self, node: FieldNode, msg: MessageHandler) -> GenStageOutput:
+    def _add_field(
+        self,
+        node: FieldNode,
+        msg: MessageHandler,  # pylint: disable=unused-argument
+    ) -> GenStageOutput:
         """Generate field.
 
         Arguments:

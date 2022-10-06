@@ -1,3 +1,7 @@
+"""Register interface tests."""
+
+__authors__ = ["Marek Pikuła <marek.pikula at embevity.com>"]
+
 import pytest
 
 from peakrdl_python_simple.regif import __main__ as test_classes
