@@ -42,7 +42,7 @@ peakrdl = "^0.3.0"
 cli = ["peakrdl"]
 
 [tool.poetry.plugins."peakrdl.exporters"]
-"python" = "peakrdl_python_simple.__peakrdl__:Exporter"
+"python-simple" = "peakrdl_python_simple.__peakrdl__:Exporter"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
