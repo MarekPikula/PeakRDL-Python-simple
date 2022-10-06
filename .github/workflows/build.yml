@@ -81,7 +81,7 @@ jobs:
       - name: Run pydocstyle linter
         run: poetry run pydocstyle src/ test/
 
-  pydocstyle:
+  pycodestyle:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
