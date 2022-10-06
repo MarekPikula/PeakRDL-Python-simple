@@ -47,8 +47,16 @@ jobs:
           echo "repo_token: ${GITHUB_TOKEN}" > .coveralls.yml
           poetry run coveralls --service=github
 
-  black:
+  lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tool:
+          - "black --check --diff"
+          - "pydocstyle"
+          - "pycodestyle"
+          - "pylint"
+          - "mypy"
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.10
@@ -62,84 +70,12 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Run formatter
-        run: poetry run black --check --diff src/ test/
-
-  pydocstyle:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-      - name: Set up Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: "1.2.1"
-      - name: Install dependencies
-        run: poetry install
-      - name: Run pydocstyle linter
-        run: poetry run pydocstyle src/ test/
-
-  pycodestyle:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-      - name: Set up Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: "1.2.1"
-      - name: Install dependencies
-        run: poetry install
-      - name: Run pycodestyle linter
-        run: poetry run pycodestyle --ignore=E203,E402,E501,W503 src/ test/
-
-  pylint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-      - name: Set up Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: "1.2.1"
-      - name: Install dependencies
-        run: poetry install
-      - name: Run pycodestyle linter
-        run: poetry run pylint src/ test/
-
-  mypy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-      - name: Set up Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: "1.2.1"
-      - name: Install dependencies
-        run: poetry install
-      - name: Run mypy check
-        run: poetry run mypy src/
+        run: poetry run ${{ matrix.tool }} src/ test/
 
   build-publish:
     needs:
       - test
-      - black
-      - pycodestyle
-      - pydocstyle
-      - pylint
-      - mypy
+      - lint
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
