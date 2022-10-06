@@ -13,6 +13,17 @@ PeakRDL toolchain.
 For the command line tool, see the [PeakRDL
 project](https://peakrdl.readthedocs.io).
 
+## Usage
+
+PeakRDL project provides a standard CLI interface. It can be installed directly
+via pip or by installing this package with `cli` extra:
+
+    $ pip install peakrdl-python-simple[cli]
+
+Then this package can be used with the following command:
+
+    $ peakrdl python-simple input_file.rdl -o output_interface.py
+
 ## Documentation
 
 See the [PeakRDL-Python Documentation](http://peakrdl-python.readthedocs.io)
