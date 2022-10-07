@@ -4,9 +4,12 @@ __authors__ = ["Marek Pikuła <marek.pikula at embevity.com>"]
 
 import difflib
 
+import pytest
 from systemrdl import RDLCompiler  # type: ignore
 
+from example.accelera_generic_example import SomeRegisterMapAddrmap
 from peakrdl_python_simple.exporter import PythonExporter
+from peakrdl_python_simple.regif.regif import DummyRegIf
 
 
 def test_exporter_basic():
@@ -38,3 +41,27 @@ def test_exporter_basic():
         )
     print(result)
     assert len(result) == 0, "Generated file doesn't match reference file."
+
+
+@pytest.fixture
+def test_regif():
+    """Create register interface."""
+    return DummyRegIf(8 * 4, range(0, 0x1000), 0)
+
+
+def test_exporter_regif(test_regif: DummyRegIf):
+    """Perform some register interface tests on the generated file."""
+    regmap = SomeRegisterMapAddrmap(test_regif)
+
+    # Write value to a field.
+    regmap.myRegInst.data0 = 3
+    assert test_regif.get(regmap.myRegInst.spec.absolute_address) == 3
+    assert regmap.myRegInst.data0 == 3
+
+    # Write value to a second field in the register and check if it didn't mess
+    # up other fields.
+    regmap.myRegInst.data1 = 2
+    assert test_regif.get(regmap.myRegInst.spec.absolute_address) == 3 + (2 << 2)
+    assert regmap.myRegInst.data0 == 3
+    assert regmap.myRegInst.data1 == 2
+    assert regmap.myRegInst.data2 == 0
