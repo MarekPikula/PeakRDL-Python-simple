@@ -62,6 +62,7 @@ class TestReg(RegAccess):
             implements_storage=True,
             is_up_counter=False,
             is_down_counter=False,
+            encode="TestEnum",
         ),
         TestEnum,
     )

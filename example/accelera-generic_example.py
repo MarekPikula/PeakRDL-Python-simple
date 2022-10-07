@@ -4,7 +4,9 @@ Don't override. Generated from:
     example/accelera-generic_example.rdl
 """
 
-from peakrdl_python_simple.regif import spec, access
+from enum import IntEnum
+
+from peakrdl_python_simple.regif import access, spec
 
 
 class ChipIdReg(access.RegAccess):
@@ -13,109 +15,129 @@ class ChipIdReg(access.RegAccess):
     This register cotains the part # and revision # for XYZ ASIC
     """
 
-    part_num = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='part_num', type_name='part_num', orig_type_name=None, external=True, width=28, msb=31, lsb=4, high=31, low=4, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=False, implements_storage=False, is_up_counter=False, is_down_counter=False), field_type=int)
+    part_num = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='part_num', type_name='part_num', orig_type_name=None, external=True, width=28, msb=31, lsb=4, high=31, low=4, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=False, implements_storage=False, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """This field represents the chips part number"""
 
 
+class LinkStatusEnum(IntEnum):
+    not_present = 0
+    """No link peer is currently detected"""
+
+    training = 1
+    """Link is currently training"""
+
+    snooze = 5
+    """Link is in a partial low power state"""
+
+    sleep = 6
+    """Link is a Full low power state"""
+
+    wake = 7
+    """Link is waking up from snooze or sleep state"""
+
+    active = 10
+    """Link is opertating normally"""
+
+
 class SerdesLinkStatusRegReg(access.RegAccess):
-    port0 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port0', type_name='link_status_field', orig_type_name='link_status_field', external=False, width=4, msb=3, lsb=0, high=3, low=0, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    port0 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port0', type_name='link_status_field', orig_type_name='link_status_field', external=False, width=4, msb=3, lsb=0, high=3, low=0, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='LinkStatusEnum'), field_type=LinkStatusEnum)
     """Status of a Serdes Link"""
 
-    port1 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port1', type_name='link_status_field', orig_type_name='link_status_field', external=False, width=4, msb=7, lsb=4, high=7, low=4, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    port1 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port1', type_name='link_status_field', orig_type_name='link_status_field', external=False, width=4, msb=7, lsb=4, high=7, low=4, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='LinkStatusEnum'), field_type=LinkStatusEnum)
     """Status of a Serdes Link"""
 
-    port2 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port2', type_name='link_status_field', orig_type_name='link_status_field', external=False, width=4, msb=11, lsb=8, high=11, low=8, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    port2 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port2', type_name='link_status_field', orig_type_name='link_status_field', external=False, width=4, msb=11, lsb=8, high=11, low=8, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='LinkStatusEnum'), field_type=LinkStatusEnum)
     """Status of a Serdes Link"""
 
-    port3 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port3', type_name='link_status_field', orig_type_name='link_status_field', external=False, width=4, msb=15, lsb=12, high=15, low=12, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    port3 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port3', type_name='link_status_field', orig_type_name='link_status_field', external=False, width=4, msb=15, lsb=12, high=15, low=12, is_virtual=False, is_volatile=True, is_sw_writable=False, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='LinkStatusEnum'), field_type=LinkStatusEnum)
     """Status of a Serdes Link"""
 
 
 class MyRegReg(access.RegAccess):
-    data0 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data0', type_name='myField_reset_0', orig_type_name='myField', external=False, width=2, msb=1, lsb=0, high=1, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data0 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data0', type_name='myField_reset_0', orig_type_name='myField', external=False, width=2, msb=1, lsb=0, high=1, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data1 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data1', type_name='myField_reset_1', orig_type_name='myField', external=False, width=2, msb=3, lsb=2, high=3, low=2, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data1 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data1', type_name='myField_reset_1', orig_type_name='myField', external=False, width=2, msb=3, lsb=2, high=3, low=2, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data2 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data2', type_name='myField_reset_2', orig_type_name='myField', external=False, width=2, msb=5, lsb=4, high=5, low=4, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data2 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data2', type_name='myField_reset_2', orig_type_name='myField', external=False, width=2, msb=5, lsb=4, high=5, low=4, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data3 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data3', type_name='myField_reset_3', orig_type_name='myField', external=False, width=2, msb=7, lsb=6, high=7, low=6, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data3 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data3', type_name='myField_reset_3', orig_type_name='myField', external=False, width=2, msb=7, lsb=6, high=7, low=6, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data4 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data4', type_name='myField_reset_0', orig_type_name='myField', external=False, width=2, msb=9, lsb=8, high=9, low=8, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data4 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data4', type_name='myField_reset_0', orig_type_name='myField', external=False, width=2, msb=9, lsb=8, high=9, low=8, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data5 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data5', type_name='myField_reset_1', orig_type_name='myField', external=False, width=2, msb=11, lsb=10, high=11, low=10, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data5 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data5', type_name='myField_reset_1', orig_type_name='myField', external=False, width=2, msb=11, lsb=10, high=11, low=10, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data6 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data6', type_name='myField_reset_2', orig_type_name='myField', external=False, width=2, msb=13, lsb=12, high=13, low=12, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data6 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data6', type_name='myField_reset_2', orig_type_name='myField', external=False, width=2, msb=13, lsb=12, high=13, low=12, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data7 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data7', type_name='myField_reset_3', orig_type_name='myField', external=False, width=2, msb=15, lsb=14, high=15, low=14, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data7 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data7', type_name='myField_reset_3', orig_type_name='myField', external=False, width=2, msb=15, lsb=14, high=15, low=14, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data8 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data8', type_name='myField_reset_0', orig_type_name='myField', external=False, width=2, msb=17, lsb=16, high=17, low=16, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data8 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data8', type_name='myField_reset_0', orig_type_name='myField', external=False, width=2, msb=17, lsb=16, high=17, low=16, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data9 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data9', type_name='myField_reset_1', orig_type_name='myField', external=False, width=2, msb=19, lsb=18, high=19, low=18, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data9 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data9', type_name='myField_reset_1', orig_type_name='myField', external=False, width=2, msb=19, lsb=18, high=19, low=18, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data10 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data10', type_name='myField_reset_2', orig_type_name='myField', external=False, width=2, msb=21, lsb=20, high=21, low=20, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data10 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data10', type_name='myField_reset_2', orig_type_name='myField', external=False, width=2, msb=21, lsb=20, high=21, low=20, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data11 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data11', type_name='myField_reset_3', orig_type_name='myField', external=False, width=2, msb=23, lsb=22, high=23, low=22, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data11 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data11', type_name='myField_reset_3', orig_type_name='myField', external=False, width=2, msb=23, lsb=22, high=23, low=22, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data12 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data12', type_name='myField_reset_0', orig_type_name='myField', external=False, width=2, msb=25, lsb=24, high=25, low=24, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data12 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data12', type_name='myField_reset_0', orig_type_name='myField', external=False, width=2, msb=25, lsb=24, high=25, low=24, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data13 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data13', type_name='myField_reset_1', orig_type_name='myField', external=False, width=2, msb=27, lsb=26, high=27, low=26, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data13 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data13', type_name='myField_reset_1', orig_type_name='myField', external=False, width=2, msb=27, lsb=26, high=27, low=26, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data14 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data14', type_name='myField_reset_2', orig_type_name='myField', external=False, width=2, msb=29, lsb=28, high=29, low=28, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data14 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data14', type_name='myField_reset_2', orig_type_name='myField', external=False, width=2, msb=29, lsb=28, high=29, low=28, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
-    data15 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data15', type_name='myField_reset_3', orig_type_name='myField', external=False, width=2, msb=31, lsb=30, high=31, low=30, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data15 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data15', type_name='myField_reset_3', orig_type_name='myField', external=False, width=2, msb=31, lsb=30, high=31, low=30, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
     """My example 2bit status field"""
 
 
 class Spi4PktCountRegReg(access.RegAccess):
-    port1 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port1', type_name='count_field_threshold_cfff', orig_type_name='count_field', external=False, width=16, msb=15, lsb=0, high=15, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False), field_type=int)
+    port1 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port1', type_name='count_field_threshold_cfff', orig_type_name='count_field', external=False, width=16, msb=15, lsb=0, high=15, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False, encode='int'), field_type=int)
     """Number of certain packet type seen"""
 
-    port0 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port0', type_name='count_field_threshold_cfff', orig_type_name='count_field', external=False, width=16, msb=31, lsb=16, high=31, low=16, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False), field_type=int)
+    port0 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port0', type_name='count_field_threshold_cfff', orig_type_name='count_field', external=False, width=16, msb=31, lsb=16, high=31, low=16, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False, encode='int'), field_type=int)
     """Number of certain packet type seen"""
 
 
 class GigePktCountRegReg(access.RegAccess):
-    port3 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port3', type_name='count_field', orig_type_name='count_field', external=False, width=8, msb=7, lsb=0, high=7, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False), field_type=int)
+    port3 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port3', type_name='count_field', orig_type_name='count_field', external=False, width=8, msb=7, lsb=0, high=7, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False, encode='int'), field_type=int)
     """Number of certain packet type seen"""
 
-    port2 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port2', type_name='count_field', orig_type_name='count_field', external=False, width=8, msb=15, lsb=8, high=15, low=8, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False), field_type=int)
+    port2 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port2', type_name='count_field', orig_type_name='count_field', external=False, width=8, msb=15, lsb=8, high=15, low=8, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False, encode='int'), field_type=int)
     """Number of certain packet type seen"""
 
-    port1 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port1', type_name='count_field', orig_type_name='count_field', external=False, width=8, msb=23, lsb=16, high=23, low=16, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False), field_type=int)
+    port1 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port1', type_name='count_field', orig_type_name='count_field', external=False, width=8, msb=23, lsb=16, high=23, low=16, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False, encode='int'), field_type=int)
     """Number of certain packet type seen"""
 
-    port0 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port0', type_name='count_field', orig_type_name='count_field', external=False, width=8, msb=31, lsb=24, high=31, low=24, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False), field_type=int)
+    port0 = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='port0', type_name='count_field', orig_type_name='count_field', external=False, width=8, msb=31, lsb=24, high=31, low=24, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False, encode='int'), field_type=int)
     """Number of certain packet type seen"""
 
 
 class PointerRegDataC4c0841bReg(access.RegAccess):
-    data = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data', type_name='data_resetsignal_7de55995', orig_type_name=None, external=False, width=32, msb=31, lsb=0, high=31, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data', type_name='data_resetsignal_7de55995', orig_type_name=None, external=False, width=32, msb=31, lsb=0, high=31, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
 
 
 class PointerRegReg(access.RegAccess):
-    data = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data', type_name='data', orig_type_name=None, external=False, width=32, msb=31, lsb=0, high=31, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    data = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='data', type_name='data', orig_type_name=None, external=False, width=32, msb=31, lsb=0, high=31, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='int'), field_type=int)
 
 
 class FifoStatusRegReg(access.RegAccess):
-    full = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='full', type_name='full_reset_0_resetsignal_7de55995', orig_type_name=None, external=False, width=1, msb=0, lsb=0, high=0, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
-    empty = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='empty', type_name='empty_reset_1', orig_type_name=None, external=False, width=1, msb=1, lsb=1, high=1, low=1, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
-    almost_empty = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='almost_empty', type_name='almost_empty_reset_1', orig_type_name=None, external=False, width=1, msb=4, lsb=4, high=4, low=4, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
-    almost_full = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='almost_full', type_name='almost_full_reset_0', orig_type_name=None, external=False, width=1, msb=5, lsb=5, high=5, low=5, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    full = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='full', type_name='full_reset_0_resetsignal_7de55995', orig_type_name=None, external=False, width=1, msb=0, lsb=0, high=0, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='bool'), field_type=bool)
+    empty = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='empty', type_name='empty_reset_1', orig_type_name=None, external=False, width=1, msb=1, lsb=1, high=1, low=1, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='bool'), field_type=bool)
+    almost_empty = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='almost_empty', type_name='almost_empty_reset_1', orig_type_name=None, external=False, width=1, msb=4, lsb=4, high=4, low=4, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='bool'), field_type=bool)
+    almost_full = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='almost_full', type_name='almost_full_reset_0', orig_type_name=None, external=False, width=1, msb=5, lsb=5, high=5, low=5, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='bool'), field_type=bool)
 
 
 class FifoRfileRegfile(access.RegfileAccess):
@@ -125,10 +147,10 @@ class FifoRfileRegfile(access.RegfileAccess):
 
 
 class VcPktCountRegReg(access.RegAccess):
-    vc_count = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='vc_count', type_name='count_field_reset_0', orig_type_name='count_field', external=False, width=31, msb=30, lsb=0, high=30, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False), field_type=int)
+    vc_count = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='vc_count', type_name='count_field_reset_0', orig_type_name='count_field', external=False, width=31, msb=30, lsb=0, high=30, low=0, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=False, is_hw_readable=True, implements_storage=True, is_up_counter=True, is_down_counter=False, encode='int'), field_type=int)
     """Number of certain packet type seen"""
 
-    active = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='active', type_name='active_reset_1', orig_type_name=None, external=False, width=1, msb=31, lsb=31, high=31, low=31, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False), field_type=int)
+    active = access.FieldAccess(specification=spec.FieldNodeSpec(inst_name='active', type_name='active_reset_1', orig_type_name=None, external=False, width=1, msb=31, lsb=31, high=31, low=31, is_virtual=False, is_volatile=True, is_sw_writable=True, is_sw_readable=True, is_hw_writable=True, is_hw_readable=True, implements_storage=True, is_up_counter=False, is_down_counter=False, encode='bool'), field_type=bool)
     """VC is Active"""
 
 

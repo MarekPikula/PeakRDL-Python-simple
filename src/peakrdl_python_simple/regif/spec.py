@@ -75,6 +75,7 @@ class FieldNodeSpec(VectorNodeSpec):  # pylint: disable=too-many-instance-attrib
     #   alias_primary: "FieldNodeSpec"
     #   has_aliases: bool
     #   aliases: Iterator["FieldNodeSpec"]
+    encode: str
 
 
 @dataclass(frozen=True)

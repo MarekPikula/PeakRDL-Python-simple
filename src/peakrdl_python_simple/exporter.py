@@ -6,7 +6,7 @@ import random
 import string
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, OrderedDict, Set, Tuple, Union
 
 from systemrdl.messages import MessageHandler  # type: ignore
 from systemrdl.node import (  # type: ignore
@@ -17,6 +17,7 @@ from systemrdl.node import (  # type: ignore
     RegNode,
     RootNode,
 )
+from systemrdl.rdltypes.simple_enum import SimpleEnum  # type: ignore
 
 from peakrdl_python_simple.regif.spec import (
     AddressableNodeSpec,
@@ -50,7 +51,8 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
     def __init__(self):
         """Initialize the exporter."""
         # List of existing types to prevent duplication.
-        self._existing_types: List[str] = []
+        self._existing_types: Set[str] = set()
+        self._existing_enums: Set[str] = set()
 
     def export(
         self,
@@ -69,6 +71,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         """
         # Each export should start fresh.
         self._existing_types.clear()
+        self._existing_enums.clear()
 
         # Get the top node.
         top = node.top if isinstance(node, RootNode) else node
@@ -92,7 +95,8 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                     '"""Python abstraction for SystemRDL register description.\n\n'
                     f"Don't override. Generated from:\n{generated_from}\n"
                     '"""\n\n'
-                    "from peakrdl_python_simple.regif import spec, access\n"
+                    "from enum import IntEnum\n\n"
+                    "from peakrdl_python_simple.regif import access, spec\n"
                 )
                 + self._add_addrmap_regfile(
                     top, node.env.msg, is_top=True
@@ -106,12 +110,17 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         return " " * PythonExporter.INDENT_SPACES * level
 
     def _generate_docstring(
-        self, node: Node, indent_level: int = 1, add_final_newline: bool = True
+        self,
+        name: Optional[str],
+        desc: Optional[str],
+        indent_level: int = 1,
+        add_final_newline: bool = True,
     ) -> str:
         """Generate docstring basing on the Node properties.
 
         Arguments:
-            node -- Node to generate the docstring for.
+            name -- name parameter from RDL.
+            desc -- description parameter from RDL.
 
         Keyword Arguments:
             indent_level -- level of indentation.
@@ -123,8 +132,8 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             Generated docstring.
         """
         indent_str = "\n" + self._indent(indent_level)
-        name = node.get_property("name", default="").replace("\n", indent_str)
-        desc = node.get_property("desc", default="").replace("\n", indent_str)
+        name = "" if name is None else name.replace("\n", indent_str)
+        desc = "" if desc is None else desc.replace("\n", indent_str)
 
         start = indent_str + '"""'
         end = '"""' + ("\n" if add_final_newline else "")
@@ -165,24 +174,33 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                 array_suffix.append(f"_{cur_index % dimension}")
                 cur_index //= dimension
 
-        is_field = isinstance(member.node, FieldNode)
         return (
             self._indent(indent_level)
             + f"{member.node.inst_name}{''.join(reversed(array_suffix))} = {member.type_name}("
             + f"specification=spec.{repr(member.spec)}"
-            + (", field_type=int" if is_field else "")
+            + (
+                f", field_type={member.spec.encode}"
+                if isinstance(member.spec, FieldNodeSpec)
+                else ""
+            )
             + ")"
-            + self._generate_docstring(member.node, indent_level, not last)
+            + self._generate_docstring(
+                member.node.get_property("name", default=None),
+                member.node.get_property("desc", default=None),
+                indent_level,
+                not last,
+            )
         )
 
     @staticmethod
-    def _to_pascal_case(unknown_str: str):
+    def _to_pascal_case(unknown_str: str, check_suffix: Optional[str] = None):
         """Convert arbitrary string to PascalCase.
 
         Used for generating class names.
 
         Arguments:
             unknown_str -- arbitrary string.
+            check_suffix -- suffix to check if exists in the string. If not, it's added.
 
         Returns:
             (Hopefully) PascalCase string.
@@ -193,6 +211,10 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                 s[0].upper() + (s[1:] if len(s) > 1 else "")
                 for s in unknown_str.split("_")
             )
+        if check_suffix is not None and not unknown_str.lower().endswith(
+            check_suffix.lower()
+        ):
+            out += check_suffix
         return out[0].upper() + (out[1:] if len(out) > 1 else "")
 
     def _format_class(  # pylint: disable=too-many-arguments
@@ -228,13 +250,18 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         if check_if_exists:
             if type_name in self._existing_types:
                 return type_name, ""
-            self._existing_types.append(type_name)
+            self._existing_types.add(type_name)
 
         gen = (
             "\n\n"
             + self._indent(indent_level)
             + f"class {type_name}(access.{node_type}Access):"
-            + self._generate_docstring(node, indent_level + 1, True)
+            + self._generate_docstring(
+                node.get_property("name", default=None),
+                node.get_property("desc", default=None),
+                indent_level + 1,
+                True,
+            )
             + "\n"
         )
         if spec is not None:
@@ -356,7 +383,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
     def _add_field(
         self,
         node: FieldNode,
-        msg: MessageHandler,  # pylint: disable=unused-argument
+        msg: MessageHandler,
     ) -> GenStageOutput:
         """Generate field.
 
@@ -367,6 +394,12 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         Returns:
             Generated field output.
         """
+        encode_type: str = "int" if node.width > 1 else "bool"
+        gen = ""
+
+        enum: Optional[SimpleEnum] = node.get_property("encode", default=None)
+        if enum is not None:
+            encode_type, gen = self._add_enum(enum, msg)
         return PythonExporter.GenStageOutput(
             node,
             "access.FieldAccess",
@@ -389,6 +422,66 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                 node.implements_storage,
                 node.is_up_counter,
                 node.is_down_counter,
+                encode_type,
             ),
-            "",
+            gen,
+        )
+
+    def _add_enum(
+        self,
+        enum: SimpleEnum,
+        msg: MessageHandler,  # pylint: disable=unused-argument
+    ) -> Tuple[str, str]:
+        """Add enum class.
+
+        Arguments:
+            enum -- SystemRDL enum definition.
+            msg -- message handler from top-level.
+
+        Returns:
+            Generated Enum class name and generated code tuple.
+        """
+        class_name = self._to_pascal_case(enum.__name__, "Enum")  # type:ignore
+
+        gen = ""
+        if class_name not in self._existing_enums:
+            self._existing_enums.add(class_name)
+            members: OrderedDict[str, SimpleEnum] = enum.__members__  # type:ignore
+            gen += (
+                f"\n\nclass {class_name}(IntEnum):\n"
+                + self._indent(1)
+                + ("\n" + self._indent(1)).join(
+                    self._format_enum_member(
+                        name, enum_item, i == len(members.items()) - 1
+                    )
+                    for i, (name, enum_item) in enumerate(members.items())
+                )
+                + "\n"
+            )
+
+        return class_name, gen
+
+    def _format_enum_member(self, name: str, enum_member: SimpleEnum, last: bool):
+        """Format SystemRDL enum member.
+
+        Arguments:
+            name -- name of the enum.
+            enum_member -- SimpleEnum from SystemRDL.
+            last -- whether the current member is the last in the enum class.
+
+        Returns:
+            Generated Python enum member.
+        """
+        value: int = enum_member.value  # type: ignore
+        rdl_name: Optional[
+            str
+        ] = enum_member._rdl_name_  # type:ignore # pylint: disable=protected-access
+        rdl_desc: Optional[
+            str
+        ] = enum_member._rdl_desc_  # type:ignore # pylint: disable=protected-access
+
+        return f"{name} = {value}" + self._generate_docstring(
+            rdl_name,
+            rdl_desc,
+            add_final_newline=not last,
         )
