@@ -2,6 +2,7 @@
 
 __authors__ = ["Marek Pikuła <marek.pikula at embevity.com>"]
 
+import itertools
 from abc import ABC
 from typing import Any, Generic, Optional, Type, TypeVar
 
@@ -155,8 +156,9 @@ class AccessWithRegifMixin:  # pylint: disable=too-few-public-methods
         """
         self._regif = regif
 
-        for member_name in vars(self):
-            member = self.__dict__[member_name]
+        for member in itertools.chain(
+            self.__class__.__dict__.values(), self.__dict__.values()
+        ):
             if isinstance(member, AccessWithRegifMixin):
                 member.regif = regif
 
