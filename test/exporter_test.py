@@ -11,9 +11,9 @@ from peakrdl_python_simple.exporter import PythonExporter
 
 def test_exporter_basic():
     """Basic exporter test comparing with a reference file."""
-    in_path = "example/accelera-generic_example.rdl"
-    ref_out_path = "example/accelera-generic_example.py"
-    out_path = "output/accelera-generic_example.py"
+    in_path = "example/accelera_generic_example.rdl"
+    ref_out_path = "example/accelera_generic_example.py"
+    out_path = "output/accelera_generic_example.py"
 
     # Generate the file.
     rdlc = RDLCompiler()
