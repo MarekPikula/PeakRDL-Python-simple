@@ -5,15 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: Exporter",
             "type": "python",
             "request": "launch",
             "module": "peakrdl",
             "args": [
                 "python-simple",
-                "example/accelera-generic_example.rdl",
+                "example/accelera_generic_example.rdl",
                 "-o",
-                "example/accelera-generic_example.py"
+                "example/accelera_generic_example.py"
             ],
             "justMyCode": true
         }

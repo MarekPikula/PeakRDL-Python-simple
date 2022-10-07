@@ -1,7 +1,7 @@
 """Python abstraction for SystemRDL register description.
 
 Don't override. Generated from:
-    example/accelera-generic_example.rdl
+    example/accelera_generic_example.rdl
 """
 
 from enum import IntEnum
