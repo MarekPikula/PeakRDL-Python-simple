@@ -1,6 +1,7 @@
 """Python abstraction for SystemRDL register description.
 
-Generated from $root. Don't override.
+Don't override. Generated from:
+    example/accelera-generic_example.rdl
 """
 
 from peakrdl_python_simple.regif import spec, access

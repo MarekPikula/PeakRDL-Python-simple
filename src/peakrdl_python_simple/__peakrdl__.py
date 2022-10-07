@@ -27,4 +27,9 @@ class Exporter:  # pylint: disable=too-few-public-methods
             top_node -- top node to export.
             options -- argparse options from the `peakrdl` tool.
         """
-        PythonExporter().export(top_node, options.output, rename=options.inst_name)
+        PythonExporter().export(
+            top_node,
+            options.output,
+            input_files=options.input_files,
+            rename=options.inst_name,
+        )

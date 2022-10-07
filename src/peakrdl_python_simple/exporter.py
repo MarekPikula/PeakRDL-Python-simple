@@ -56,12 +56,14 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         self,
         node: Union[AddrmapNode, RootNode],
         output_path: str,
+        input_files: Optional[List[str]] = None,
         rename: Optional[str] = None,
     ):
         """Export the `node` to generated Python interface file.
 
         Arguments:
             node -- node to export.
+            input_files -- list of input files.
             output_path -- path to the exported file.
             rename -- name to rename the top-level to.
         """
@@ -71,6 +73,12 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         # Get the top node.
         top = node.top if isinstance(node, RootNode) else node
         top_name = rename if rename is not None else node.inst_name
+
+        generated_from = self._indent(1) + top_name
+        if input_files is not None:
+            generated_from = self._indent(1) + ("\n" + self._indent(1)).join(
+                f for f in input_files
+            )
 
         # Ensure proper format of the output path and that the directory exists.
         if not output_path.endswith(".py"):
@@ -82,7 +90,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             output.write(
                 (
                     '"""Python abstraction for SystemRDL register description.\n\n'
-                    f"Generated from {top_name}. Don't override.\n"
+                    f"Don't override. Generated from:\n{generated_from}\n"
                     '"""\n\n'
                     "from peakrdl_python_simple.regif import spec, access\n"
                 )

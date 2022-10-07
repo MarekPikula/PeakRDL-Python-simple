@@ -21,6 +21,7 @@ def test_exporter_basic():
     PythonExporter().export(
         rdlc.elaborate(),  # type: ignore
         out_path,
+        input_files=[in_path],
     )
 
     # Check if the generated file matches reference file.
