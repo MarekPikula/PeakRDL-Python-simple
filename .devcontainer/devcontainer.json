@@ -33,6 +33,7 @@
 				"njpwerner.autodocstring",
 				"ryanluker.vscode-coverage-gutters",
 				"mhutchie.git-graph",
+				"GitHub.vscode-pull-request-github"
 			]
 		}
 	},
