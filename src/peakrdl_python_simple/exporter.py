@@ -18,7 +18,8 @@ from systemrdl.node import (  # type: ignore
     RootNode,
 )
 
-from .regif.spec import (
+from peakrdl_python_simple.regif.spec import (
+    AddressableNodeSpec,
     AddrmapNodeSpec,
     FieldNodeSpec,
     NodeSpec,
@@ -90,8 +91,14 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                 ).generated_code
             )
 
+    INDENT_SPACES: int = 4
+
+    @staticmethod
+    def _indent(level: int = 0):
+        return " " * PythonExporter.INDENT_SPACES * level
+
     def _generate_docstring(
-        self, node: Node, indent: int = 4, add_final_newline: bool = True
+        self, node: Node, indent_level: int = 1, add_final_newline: bool = True
     ) -> str:
         """Generate docstring basing on the Node properties.
 
@@ -99,7 +106,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             node -- Node to generate the docstring for.
 
         Keyword Arguments:
-            indent -- count of spaces of indentation.
+            indent_level -- level of indentation.
             add_final_newline -- whether to add endline at the end or not of
                 the docstring. If name and desc are empty the newline is not
                 generated either way.
@@ -107,7 +114,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         Returns:
             Generated docstring.
         """
-        indent_str = "\n" + " " * indent
+        indent_str = "\n" + self._indent(indent_level)
         name = node.get_property("name", default="").replace("\n", indent_str)
         desc = node.get_property("desc", default="").replace("\n", indent_str)
 
@@ -122,7 +129,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         return start + name + "\n" + indent_str + desc + indent_str + end
 
     def _format_member(
-        self, member: GenStageOutput, indent: int = 4, last: bool = False
+        self, member: GenStageOutput, indent_level: int = 1, last: bool = False
     ) -> str:
         """Format class member.
 
@@ -130,20 +137,34 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             member -- member definition to create the definition for.
 
         Keyword Arguments:
-            indent -- count of spaces of indentation.
+            indent_level -- level of indentation.
             last -- the member is the last in the class declaration.
 
         Returns:
             Generated member with docstring if applicable.
         """
+        # Generate array suffix if applicable.
+        array_suffix: List[str] = []
+        if isinstance(member.spec, AddressableNodeSpec) and member.spec.is_array:
+            assert (
+                member.spec.array_dimensions is not None
+                and member.spec.array_stride is not None
+            )
+            cur_index = (
+                member.spec.absolute_address - member.spec.raw_absolute_address
+            ) // member.spec.array_stride
+            for dimension in reversed(member.spec.array_dimensions):
+                array_suffix.append(f"_{cur_index % dimension}")
+                cur_index //= dimension
+
         is_field = isinstance(member.node, FieldNode)
         return (
-            (" " * indent)
-            + f"{member.node.inst_name} = {member.type_name}("
+            self._indent(indent_level)
+            + f"{member.node.inst_name}{''.join(reversed(array_suffix))} = {member.type_name}("
             + f"specification=spec.{repr(member.spec)}"
             + (", field_type=int" if is_field else "")
             + ")"
-            + self._generate_docstring(member.node, indent, not last)
+            + self._generate_docstring(member.node, indent_level, not last)
         )
 
     @staticmethod
@@ -171,6 +192,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         node: Node,
         spec: Optional[NodeSpec] = None,
         member_list: Optional[List[GenStageOutput]] = None,
+        indent_level: int = 0,
         check_if_exists: bool = True,
     ) -> Tuple[str, str]:
         """Generage class definition.
@@ -182,6 +204,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             spec -- optional specification list for `_spec` member generation.
             member_list -- optional list of members. If none are present `pass`
                 is added.
+            indent_level -- level of indentation for the class definition.
             check_if_exists -- check if the type exists and don't generate code
                 if indeed it exists. Uses `self._existing_types` list.
 
@@ -199,21 +222,22 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                 return type_name, ""
             self._existing_types.append(type_name)
 
-        generic = "[int]" if isinstance(node, FieldNode) else ""
         gen = (
-            f"\n\nclass {type_name}(access.{node_type}Access{generic}):"
-            + self._generate_docstring(node, 4, True)
+            "\n\n"
+            + self._indent(indent_level)
+            + f"class {type_name}(access.{node_type}Access):"
+            + self._generate_docstring(node, indent_level + 1, True)
             + "\n"
         )
         if spec is not None:
-            gen += f"    _spec = spec.{repr(spec)}\n"
+            gen += self._indent(indent_level + 1) + f"_spec = spec.{repr(spec)}\n"
         if member_list is not None and len(member_list) > 0:
             gen += "\n".join(
-                self._format_member(member, 4, i == len(member_list) - 1)
+                self._format_member(member, indent_level + 1, i == len(member_list) - 1)
                 for i, member in enumerate(member_list)
             )
         else:
-            gen += "    pass"
+            gen += self._indent(indent_level + 1) + "pass"
 
         return type_name, gen + "\n"
 
@@ -266,6 +290,9 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             node.absolute_address,
             node.size,
             node.total_size,
+            node.is_array,
+            node.array_dimensions,
+            node.array_stride,
         )
         type_name, gen_node = self._format_class(
             node, spec if is_top else None, members
@@ -304,6 +331,9 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                 node.absolute_address,
                 node.size,
                 node.total_size,
+                node.is_array,
+                node.array_dimensions,
+                node.array_stride,
                 node.is_virtual,
                 node.has_sw_writable,
                 node.has_sw_readable,

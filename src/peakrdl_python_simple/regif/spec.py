@@ -6,7 +6,7 @@ All are based on available properties of their systemrdl.node.* counterparts.
 __authors__ = ["Marek Pikuła <marek.pikula at embevity.com>"]
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 
 @dataclass(frozen=True)
@@ -31,10 +31,9 @@ class AddressableNodeSpec(NodeSpec):
     absolute_address: int
     size: int
     total_size: int
-    # Array not supported yet
-    #   is_array: bool
-    #   array_dimensions: Optional[List[int]]
-    #   array_stride: Optional[int]
+    is_array: bool
+    array_dimensions: Optional[List[int]]
+    array_stride: Optional[int]
 
 
 @dataclass(frozen=True)
