@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}"
         },
         {
             "name": "Python: Exporter",
@@ -23,7 +24,8 @@
                 "-o",
                 "example/accelera_generic_example.py"
             ],
-            "justMyCode": true
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
