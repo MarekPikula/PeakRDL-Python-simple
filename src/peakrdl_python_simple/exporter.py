@@ -6,7 +6,7 @@ import random
 import string
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from systemrdl.messages import MessageHandler  # type: ignore
 from systemrdl.node import (  # type: ignore
@@ -18,12 +18,17 @@ from systemrdl.node import (  # type: ignore
     RootNode,
 )
 
+from .regif.spec import (
+    AddrmapNodeSpec,
+    FieldNodeSpec,
+    NodeSpec,
+    RegfileNodeSpec,
+    RegNodeSpec,
+)
+
 
 class PythonExporter:  # pylint: disable=too-few-public-methods
     """PeakRDL Python exporter main class."""
-
-    SpecList = List[Any]
-    """Specification list. Later reformatted to string."""
 
     @dataclass
     class GenStageOutput:
@@ -35,8 +40,8 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         type_name: str
         """Name of Python type of this node."""
 
-        spec_list: "PythonExporter.SpecList"
-        """List of specification items."""
+        spec: NodeSpec
+        """Specification of the node."""
 
         generated_code: str
         """Python code generated during this stage."""
@@ -84,20 +89,6 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                     top, node.env.msg, is_top=True
                 ).generated_code
             )
-
-    @staticmethod
-    def _format_spec_list(spec_list: SpecList) -> str:
-        """Format specification list.
-
-        Arguments:
-            spec_list -- specification list with arbitrary types.
-
-        Returns:
-            Generated string of specification values.
-        """
-        return ", ".join(
-            str(s) if not isinstance(s, str) else f'"{s}"' for s in spec_list
-        )
 
     def _generate_docstring(
         self, node: Node, indent: int = 4, add_final_newline: bool = True
@@ -149,9 +140,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         return (
             (" " * indent)
             + f"{member.node.inst_name} = {member.type_name}("
-            + f"specification=spec.{member.node.__class__.__name__}Spec("
-            + self._format_spec_list(member.spec_list)
-            + ")"
+            + f"specification=spec.{repr(member.spec)}"
             + (", field_type=int" if is_field else "")
             + ")"
             + self._generate_docstring(member.node, indent, not last)
@@ -180,7 +169,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
     def _format_class(
         self,
         node: Node,
-        spec_list: Optional[List[Any]] = None,
+        spec: Optional[NodeSpec] = None,
         member_list: Optional[List[GenStageOutput]] = None,
         check_if_exists: bool = True,
     ) -> Tuple[str, str]:
@@ -190,7 +179,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             node -- node to generate the class for.
 
         Keyword Arguments:
-            spec_list -- optional specification list for `_spec` member generation.
+            spec -- optional specification list for `_spec` member generation.
             member_list -- optional list of members. If none are present `pass`
                 is added.
             check_if_exists -- check if the type exists and don't generate code
@@ -216,12 +205,8 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             + self._generate_docstring(node, 4, True)
             + "\n"
         )
-        if spec_list is not None:
-            gen += (
-                f"    _spec = spec.{node_type}NodeSpec("
-                + self._format_spec_list(spec_list)
-                + ")\n"
-            )
+        if spec is not None:
+            gen += f"    _spec = spec.{repr(spec)}\n"
         if member_list is not None and len(member_list) > 0:
             gen += "\n".join(
                 self._format_member(member, 4, i == len(member_list) - 1)
@@ -267,7 +252,10 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                     f"Unsupported type of node ({child.type_name}) for {child.inst_name}."
                 )
 
-        spec = [
+        spec_type = (
+            RegfileNodeSpec if isinstance(node, RegfileNode) else AddrmapNodeSpec
+        )
+        spec = spec_type(
             node.inst_name,
             node.type_name,
             node.orig_type_name,
@@ -278,7 +266,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             node.absolute_address,
             node.size,
             node.total_size,
-        ]
+        )
         type_name, gen_node = self._format_class(
             node, spec if is_top else None, members
         )
@@ -301,27 +289,31 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             gen += output.generated_code
             members.append(output)
 
-        spec = [
-            node.inst_name,
-            node.type_name,
-            node.orig_type_name,
-            node.external,
-            node.raw_address_offset,
-            node.address_offset,
-            node.raw_absolute_address,
-            node.absolute_address,
-            node.size,
-            node.total_size,
-            node.is_virtual,
-            node.has_sw_writable,
-            node.has_sw_readable,
-            node.has_hw_writable,
-            node.has_hw_readable,
-            node.is_interrupt_reg,
-            node.is_halt_reg,
-        ]
         type_name, gen_node = self._format_class(node, member_list=members)
-        return PythonExporter.GenStageOutput(node, type_name, spec, gen + gen_node)
+        return PythonExporter.GenStageOutput(
+            node,
+            type_name,
+            RegNodeSpec(
+                node.inst_name,
+                node.type_name,
+                node.orig_type_name,
+                node.external,
+                node.raw_address_offset,
+                node.address_offset,
+                node.raw_absolute_address,
+                node.absolute_address,
+                node.size,
+                node.total_size,
+                node.is_virtual,
+                node.has_sw_writable,
+                node.has_sw_readable,
+                node.has_hw_writable,
+                node.has_hw_readable,
+                node.is_interrupt_reg,
+                node.is_halt_reg,
+            ),
+            gen + gen_node,
+        )
 
     def _add_field(
         self,
@@ -337,36 +329,40 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         Returns:
             Generated field output.
         """
-        spec = [
-            node.inst_name,
-            node.type_name,
-            node.orig_type_name,
-            node.external,
-            node.width,
-            node.msb,
-            node.lsb,
-            node.high,
-            node.low,
-            node.is_virtual,
-            node.is_volatile,
-            node.is_sw_writable,
-            node.is_sw_readable,
-            node.is_hw_writable,
-            node.is_hw_readable,
-            node.implements_storage,
-            node.is_up_counter,
-            node.is_down_counter,
-        ]
-        return PythonExporter.GenStageOutput(node, "access.FieldAccess", spec, "")
+        return PythonExporter.GenStageOutput(
+            node,
+            "access.FieldAccess",
+            FieldNodeSpec(
+                node.inst_name,
+                node.type_name,
+                node.orig_type_name,
+                node.external,
+                node.width,
+                node.msb,
+                node.lsb,
+                node.high,
+                node.low,
+                node.is_virtual,
+                node.is_volatile,
+                node.is_sw_writable,
+                node.is_sw_readable,
+                node.is_hw_writable,
+                node.is_hw_readable,
+                node.implements_storage,
+                node.is_up_counter,
+                node.is_down_counter,
+            ),
+            "",
+        )
 
 
 if __name__ == "__main__":
     from systemrdl import RDLCompiler  # type: ignore
 
     rdlc = RDLCompiler()
-    rdlc.compile_file("tests/test_sources/accelera-generic_example.rdl")
+    rdlc.compile_file("test/example/accelera-generic_example.rdl")
     e = PythonExporter()
     e.export(
         rdlc.elaborate(),  # type: ignore
-        "tests/test_sources/accelera-generic_example.py",
+        "test/example/accelera-generic_example.py",
     )
