@@ -18,6 +18,8 @@ class SpecMixin(Generic[SpecT]):  # pylint: disable=too-few-public-methods
     `_spec` can be set in the constructor or in the final child class.
     """
 
+    _spec: Optional[SpecT] = None
+
     def __init__(self, specification: Optional[SpecT] = None):
         """Initialize class with specification.
 
@@ -31,10 +33,11 @@ class SpecMixin(Generic[SpecT]):  # pylint: disable=too-few-public-methods
     @property
     def spec(self) -> SpecT:
         """Get the specification of the node."""
-        assert (
-            self._spec is not None
-        ), "SpecMixin requires programmer to set `_spec` member."
-        return self._spec
+        if self._spec is not None:
+            return self._spec
+        if self.__class__._spec is not None:  # pylint: disable=protected-access
+            return self.__class__._spec  # pylint: disable=protected-access
+        assert False, "SpecMixin requires programmer to set `_spec` member."
 
 
 T = TypeVar("T", bound=int)
@@ -182,7 +185,7 @@ class HierarchicalAccess(Generic[SpecT], AccessWithRegifMixin, SpecMixin[SpecT],
         """
         AccessWithRegifMixin.__init__(self, register_interface)
         # TODO: Figure out why mypy doesn't like it:
-        SpecMixin[SpecT].__init__(self, specification)  # type: ignore
+        SpecMixin.__init__(self, specification)  # type: ignore
 
 
 class RegAccess(HierarchicalAccess[RegNodeSpec], ABC):
