@@ -187,7 +187,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             )
         return out[0].upper() + (out[1:] if len(out) > 1 else "")
 
-    def _format_class(
+    def _format_class(  # pylint: disable=too-many-arguments
         self,
         node: Node,
         spec: Optional[NodeSpec] = None,
@@ -384,15 +384,3 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             ),
             "",
         )
-
-
-if __name__ == "__main__":
-    from systemrdl import RDLCompiler  # type: ignore
-
-    rdlc = RDLCompiler()
-    rdlc.compile_file("test/example/accelera-generic_example.rdl")
-    e = PythonExporter()
-    e.export(
-        rdlc.elaborate(),  # type: ignore
-        "test/example/accelera-generic_example.py",
-    )

@@ -22,7 +22,7 @@ class NodeSpec:
 
 
 @dataclass(frozen=True)
-class AddressableNodeSpec(NodeSpec):
+class AddressableNodeSpec(NodeSpec):  # pylint: disable=too-many-instance-attributes
     """Specification of systemrdl.node.AddressableNode."""
 
     raw_address_offset: int
