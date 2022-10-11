@@ -308,7 +308,8 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                 members.append(output)
             else:
                 msg.warning(
-                    f"Unsupported type of node ({child.type_name}) for {child.inst_name}."
+                    f"Unsupported type of node ({child.__class__.__name__}) "
+                    f"for {'/'.join(child.get_path_segments())}."
                 )
 
         spec_type = (
