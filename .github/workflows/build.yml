@@ -89,8 +89,9 @@ jobs:
       - name: Build docs
         run: poetry run make -C docs/ html
       - name: Upload the built documentation
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
+          name: documentation
           path: docs/_build/
 
   build-publish:
@@ -113,9 +114,10 @@ jobs:
       - name: Build the package
         run: poetry build
       - name: Upload the built package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          path: dist/
+          name: package
+          path: dist/*
       - name: Publish the package
         run: |
           poetry config http-basic.pypi __token__ ${{ secrets.PYPI_PASSWORD }}
