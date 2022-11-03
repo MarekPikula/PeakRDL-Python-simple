@@ -6,7 +6,7 @@ import random
 import string
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, OrderedDict, Set, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union
 
 from systemrdl.messages import MessageHandler  # type: ignore
 from systemrdl.node import (  # type: ignore
