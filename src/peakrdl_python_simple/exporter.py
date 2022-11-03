@@ -17,7 +17,7 @@ from systemrdl.node import (  # type: ignore
     RegNode,
     RootNode,
 )
-from systemrdl.rdltypes.simple_enum import SimpleEnum  # type: ignore
+from systemrdl.rdltypes.user_enum import UserEnum, UserEnumMeta  # type: ignore
 
 from peakrdl_python_simple.regif.spec import (
     AddressableNodeSpec,
@@ -398,7 +398,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         encode_type: str = "int" if node.width > 1 else "bool"
         gen = ""
 
-        enum: Optional[SimpleEnum] = node.get_property("encode", default=None)
+        enum: Optional[UserEnumMeta] = node.get_property("encode", default=None)
         if enum is not None:
             encode_type, gen = self._add_enum(enum, msg)
         return PythonExporter.GenStageOutput(
@@ -430,7 +430,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
 
     def _add_enum(
         self,
-        enum: SimpleEnum,
+        enum: UserEnumMeta,
         msg: MessageHandler,  # pylint: disable=unused-argument
     ) -> Tuple[str, str]:
         """Add enum class.
@@ -442,12 +442,13 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         Returns:
             Generated Enum class name and generated code tuple.
         """
-        class_name = self._to_pascal_case(enum.__name__, "Enum")  # type:ignore
+        print(enum.type_name)
+        class_name = self._to_pascal_case(enum.type_name, "Enum")
 
         gen = ""
         if class_name not in self._existing_enums:
             self._existing_enums.add(class_name)
-            members: OrderedDict[str, SimpleEnum] = enum.__members__  # type:ignore
+            members = enum.members
             gen += (
                 f"\n\nclass {class_name}(IntEnum):\n"
                 + self._indent(1)
@@ -462,7 +463,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
 
         return class_name, gen
 
-    def _format_enum_member(self, name: str, enum_member: SimpleEnum, last: bool):
+    def _format_enum_member(self, name: str, enum_member: UserEnum, last: bool):
         """Format SystemRDL enum member.
 
         Arguments:
@@ -473,13 +474,9 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         Returns:
             Generated Python enum member.
         """
-        value: int = enum_member.value  # type: ignore
-        rdl_name: Optional[
-            str
-        ] = enum_member._rdl_name_  # type:ignore # pylint: disable=protected-access
-        rdl_desc: Optional[
-            str
-        ] = enum_member._rdl_desc_  # type:ignore # pylint: disable=protected-access
+        value = enum_member.value
+        rdl_name = enum_member.rdl_name
+        rdl_desc = enum_member.rdl_desc
 
         return f"{name} = {value}" + self._generate_docstring(
             rdl_name,
