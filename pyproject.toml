@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "peakrdl_python_simple"
-version = "0.2.3"
+version = "0.2.4"
 description = "Export Python description from the systemrdl-compiler register model"
 authors = ["Marek Pikuła <marek.pikula@embevity.com>"]
 maintainers = ["Marek Pikuła <marek.pikula@embevity.com>"]
@@ -20,11 +20,12 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.7.2"
-systemrdl-compiler = "^1.25.0"
+systemrdl-compiler = { version = "^1.25.0", optional = true }
 peakrdl = { version = "^0.3.0", optional = true }
 
 [tool.poetry.extras]
-cli = ["peakrdl"]
+generator = ["systemrdl-compiler"]
+cli = ["peakrdl", "systemrdl-compiler"]
 
 [tool.poetry.group.dev.dependencies]
 peakrdl = "^0.3.0"

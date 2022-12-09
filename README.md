@@ -15,6 +15,13 @@ project](https://peakrdl.readthedocs.io).
 
 ## Usage
 
+The basic install comes without the exporter capability, so that the package
+can be installed on low-end devices without the need to install
+`systemrdl-compiler`. To have the generator capability install with `generator`
+extra:
+
+    $ pip install peakrdl-python-simple[generator]
+
 PeakRDL project provides a standard CLI interface. It can be installed directly
 via pip or by installing this package with `cli` extra:
 

@@ -12,7 +12,7 @@ Install from `PyPi`_ using pip:
 
 .. code-block:: bash
 
-    python3 -m pip install peakrdl-python-simple
+    python3 -m pip install peakrdl-python-simple[generator]
 
 .. _PyPi: https://pypi.org/project/peakrdl-python-simple
 
@@ -49,3 +49,4 @@ Links
     :hidden:
 
     self
+    exporter

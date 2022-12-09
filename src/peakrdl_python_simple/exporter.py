@@ -8,16 +8,23 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Set, Tuple, Union
 
-from systemrdl.messages import MessageHandler  # type: ignore
-from systemrdl.node import (  # type: ignore
-    AddrmapNode,
-    FieldNode,
-    Node,
-    RegfileNode,
-    RegNode,
-    RootNode,
-)
-from systemrdl.rdltypes.user_enum import UserEnum, UserEnumMeta  # type: ignore
+try:
+    from systemrdl.messages import MessageHandler  # type: ignore
+    from systemrdl.node import (  # type: ignore
+        AddrmapNode,
+        FieldNode,
+        Node,
+        RegfileNode,
+        RegNode,
+        RootNode,
+    )
+    from systemrdl.rdltypes.user_enum import UserEnum, UserEnumMeta  # type: ignore
+except ImportError as exc:
+    raise RuntimeError(
+        "SystemRDL compiler not installed. "
+        'Reinstall with "generator" extra (e.g., '
+        "`pip install peakrdl-python-simple[generator]`)."
+    ) from exc
 
 from peakrdl_python_simple.regif.spec import (
     AddressableNodeSpec,
