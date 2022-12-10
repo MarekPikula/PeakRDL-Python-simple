@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "peakrdl_python_simple"
-version = "0.2.5"
+version = "0.2.6"
 description = "Export Python description from the systemrdl-compiler register model"
 authors = ["Marek Pikuła <marek.pikula@embevity.com>"]
 maintainers = ["Marek Pikuła <marek.pikula@embevity.com>"]
