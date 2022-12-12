@@ -40,6 +40,7 @@ class TestReg(RegAccess):
         has_hw_readable=True,
         is_interrupt_reg=False,
         is_halt_reg=False,
+        field_count=1,
     )
 
     test_field = FieldAccess(

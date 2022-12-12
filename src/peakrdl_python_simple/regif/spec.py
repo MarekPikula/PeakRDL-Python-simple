@@ -79,7 +79,7 @@ class FieldNodeSpec(VectorNodeSpec):  # pylint: disable=too-many-instance-attrib
 
 
 @dataclass(frozen=True)
-class RegNodeSpec(AddressableNodeSpec):
+class RegNodeSpec(AddressableNodeSpec):  # pylint: disable=too-many-instance-attributes
     """Specification of systemrdl.node.RegNode."""
 
     is_virtual: bool
@@ -94,6 +94,7 @@ class RegNodeSpec(AddressableNodeSpec):
     #   alias_primaty: "RegNodeSpec"
     #   has_aliases: bool
     #   aliases: Iterator["RegNodeSpec"]
+    field_count: int
 
 
 @dataclass(frozen=True)

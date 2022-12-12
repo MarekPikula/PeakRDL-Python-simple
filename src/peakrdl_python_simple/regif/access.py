@@ -54,8 +54,6 @@ class FieldAccess(Generic[T], SpecMixin[FieldNodeSpec], ABC):
     Field type is set as generic, but it needs to be castable to and from
     `int` to work with the register interface. This means it can be, e.g.,
     `int` or any `IntEnum`.
-
-    TODO: Make field type be inferred from SystemRDL and generated.
     """
 
     def __init__(self, specification: FieldNodeSpec, field_type: Type[T]):
@@ -121,6 +119,7 @@ class FieldAccess(Generic[T], SpecMixin[FieldNodeSpec], ABC):
             self.spec.lsb,
             self.spec.width,
             int(value),
+            instance.spec.field_count == 1,
         )
 
 

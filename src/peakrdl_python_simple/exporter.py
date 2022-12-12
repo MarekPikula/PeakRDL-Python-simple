@@ -384,6 +384,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
                 node.has_hw_readable,
                 node.is_interrupt_reg,
                 node.is_halt_reg,
+                len(members),
             ),
             gen + gen_node,
         )

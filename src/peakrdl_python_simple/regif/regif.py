@@ -99,6 +99,11 @@ class RegisterInterface(ABC):
         """Get register data width."""
         return self._data_width
 
+    @property
+    def address_bounds(self) -> Optional[range]:
+        """Get address bounds of this register interface."""
+        return self._address_bounds
+
     @abstractmethod
     def get(self, reg_address: int) -> int:
         """Read register value abstraction.
@@ -146,8 +151,13 @@ class RegisterInterface(ABC):
         self._sanitize_field_args(reg_address, field_pos, field_width)
         return (self.get(reg_address) >> field_pos) & ((1 << field_width) - 1)
 
-    def set_field(
-        self, reg_address: int, field_pos: int, field_width: int, value: int
+    def set_field(  # pylint: disable=too-many-arguments
+        self,
+        reg_address: int,
+        field_pos: int,
+        field_width: int,
+        value: int,
+        ignore_other_fields: bool = False,
     ) -> None:
         """Write register field abstraction.
 
@@ -162,16 +172,17 @@ class RegisterInterface(ABC):
             field_pos -- field position in the register (counting from LSB).
             field_width -- width of the field in bits.
             value -- new value of the field.
+
+        Keyword Arguments:
+            ignore_other_fields -- if set to True, other fields current values are ignored.
         """
         self._sanitize_field_args(reg_address, field_pos, field_width, value)
 
         field_negative_mask = ((1 << self.data_width) - 1) ^ (
             ((1 << field_width) - 1) << field_pos
         )
-        self.set(
-            reg_address,
-            self.get(reg_address) & field_negative_mask | (value << field_pos),
-        )
+        base = 0 if ignore_other_fields else self.get(reg_address) & field_negative_mask
+        self.set(reg_address, base | (value << field_pos))
 
 
 class DummyRegIf(RegisterInterface):
