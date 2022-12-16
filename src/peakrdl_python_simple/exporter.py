@@ -460,7 +460,6 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         Returns:
             Generated Enum class name and generated code tuple.
         """
-        print(enum.type_name)
         class_name = self._to_pascal_case(enum.type_name, "Enum")
 
         gen = ""
