@@ -200,7 +200,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         )
 
     @staticmethod
-    def _to_pascal_case(unknown_str: str, check_suffix: Optional[str] = None):
+    def _to_pascal_case(unknown_str: str, check_suffix_prefix: Optional[str] = None):
         """Convert arbitrary string to PascalCase.
 
         Used for generating class names.
@@ -213,16 +213,17 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             (Hopefully) PascalCase string.
         """
         out = unknown_str
-        if "_" in unknown_str:
-            out = "".join(
-                s[0].upper() + (s[1:] if len(s) > 1 else "")
-                for s in unknown_str.split("_")
-            )
-        if check_suffix is not None and not unknown_str.lower().endswith(
-            check_suffix.lower()
+
+        # Convert snake_case and CAPS_SNAKE_CASE
+        if "_" in unknown_str or unknown_str.upper() == unknown_str:
+            out = "".join(s.capitalize() for s in unknown_str.split("_"))
+
+        if check_suffix_prefix is not None and not (
+            out.lower().endswith(check_suffix_prefix.lower())
+            or out.lower().startswith(check_suffix_prefix.lower())
         ):
-            out += check_suffix
-        return out[0].upper() + (out[1:] if len(out) > 1 else "")
+            out += check_suffix_prefix.capitalize()
+        return out
 
     def _format_class(  # pylint: disable=too-many-arguments
         self,
@@ -250,9 +251,10 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         """
         node_type = node.__class__.__name__.replace("Node", "")
         base_type_name = self._to_pascal_case(
-            node.type_name + node_type
+            node.type_name
             if node.type_name is not None
-            else "".join(random.choice(string.ascii_lowercase) for _ in range(16))
+            else "".join(random.choice(string.ascii_lowercase) for _ in range(16)),
+            node_type,
         )
         type_name = base_type_name
         if check_if_exists:
