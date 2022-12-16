@@ -249,22 +249,28 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             Class name and generated code tuple.
         """
         node_type = node.__class__.__name__.replace("Node", "")
-        type_name = self._to_pascal_case(
+        base_type_name = self._to_pascal_case(
             node.type_name + node_type
             if node.type_name is not None
             else "".join(random.choice(string.ascii_lowercase) for _ in range(16))
         )
+        type_name = base_type_name
         if check_if_exists:
-            if type_name not in self._existing_types:
-                self._existing_types[type_name] = 0
+            if base_type_name not in self._existing_types:
+                self._existing_types[base_type_name] = 0
             else:
-                self._existing_types[type_name] += 1
-                type_name += f"_{self._existing_types[type_name]}"
+                self._existing_types[base_type_name] += 1
+                type_name += f"_{self._existing_types[base_type_name]}"
+        parent_type_name = (
+            f"access.{node_type}Access"
+            if type_name == base_type_name
+            else base_type_name
+        )
 
         gen = (
             "\n\n"
             + self._indent(indent_level)
-            + f"class {type_name}(access.{node_type}Access):"
+            + f"class {type_name}({parent_type_name}):"
             + self._generate_docstring(
                 node.get_property("name", default=None),
                 node.get_property("desc", default=None),
