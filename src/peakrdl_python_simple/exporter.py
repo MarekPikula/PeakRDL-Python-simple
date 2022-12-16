@@ -96,18 +96,18 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
         # Generate the file.
+        generated_top = self._add_addrmap_regfile(top, node.env.msg, is_top=True)
         with open(output_path, "w", encoding="UTF-8") as output:
             output.write(
-                (
-                    '"""Python abstraction for SystemRDL register description.\n\n'
-                    f"Don't override. Generated from:\n{generated_from}\n"
-                    '"""\n\n'
-                    "from enum import IntEnum\n\n"
-                    "from peakrdl_python_simple.regif import access, spec\n"
-                )
-                + self._add_addrmap_regfile(
-                    top, node.env.msg, is_top=True
-                ).generated_code
+                '"""Python abstraction for SystemRDL register description.\n\n'
+                + f"Don't override. Generated from:\n{generated_from}\n"
+                + '"""\n\n'
+            )
+            if len(self._existing_enums) > 0:
+                output.write("from enum import IntEnum\n\n")
+            output.write(
+                "from peakrdl_python_simple.regif import access, spec\n"
+                + generated_top.generated_code
             )
 
     INDENT_SPACES: int = 4
