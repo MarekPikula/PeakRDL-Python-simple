@@ -7,7 +7,14 @@ from abc import ABC
 from typing import Any, Generic, Optional, Type, TypeVar
 
 from .regif import RegisterInterface
-from .spec import AddrmapNodeSpec, FieldNodeSpec, NodeSpec, RegfileNodeSpec, RegNodeSpec
+from .spec import (
+    AddressableNodeSpec,
+    AddrmapNodeSpec,
+    FieldNodeSpec,
+    NodeSpec,
+    RegfileNodeSpec,
+    RegNodeSpec,
+)
 
 SpecT = TypeVar("SpecT", bound=NodeSpec)
 """Node specification generic type."""
@@ -19,7 +26,7 @@ class SpecMixin(Generic[SpecT]):  # pylint: disable=too-few-public-methods
     `_spec` can be set in the constructor or in the final child class.
     """
 
-    _spec: Optional[SpecT] = None
+    _spec: Optional[SpecT]
 
     def __init__(self, specification: Optional[SpecT] = None):
         """Initialize class with specification.
@@ -29,14 +36,18 @@ class SpecMixin(Generic[SpecT]):  # pylint: disable=too-few-public-methods
                 `_spec` class member needs to be set explicitly in the child
                 class declaration.
         """
-        self._spec = specification
+        if not hasattr(self.__class__, "_spec"):
+            self._spec: Optional[SpecT] = specification
 
     @property
     def spec(self) -> SpecT:
         """Get the specification of the node."""
-        if self._spec is not None:
+        if hasattr(self, "_spec") and self._spec is not None:
             return self._spec
-        if self.__class__._spec is not None:  # pylint: disable=protected-access
+        if (
+            hasattr(self.__class__, "_spec")
+            and self.__class__._spec is not None  # pylint: disable=protected-access
+        ):
             return self.__class__._spec  # pylint: disable=protected-access
         assert False, "SpecMixin requires programmer to set `_spec` member."
 
@@ -162,17 +173,23 @@ class AccessWithRegifMixin:  # pylint: disable=too-few-public-methods
                 member.regif = regif
 
 
-class HierarchicalAccess(Generic[SpecT], AccessWithRegifMixin, SpecMixin[SpecT], ABC):
+AddressableSpecT = TypeVar("AddressableSpecT", bound=AddressableNodeSpec)
+"""Addressable node specification generic type."""
+
+
+class HierarchicalAccess(
+    Generic[AddressableSpecT], AccessWithRegifMixin, SpecMixin[AddressableSpecT], ABC
+):
     """Hierarchical block access interface.
 
     Arguments:
-        SpecT -- Node specification.
+        AddressableSpecT -- Node specification.
     """
 
     def __init__(
         self,
         register_interface: Optional[RegisterInterface] = None,
-        specification: Optional[SpecT] = None,
+        specification: Optional[AddressableSpecT] = None,
     ):
         """Initialize the hierarchical access block.
 
