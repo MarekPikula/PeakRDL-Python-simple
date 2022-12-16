@@ -6,7 +6,7 @@ import random
 import string
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 try:
     from systemrdl.messages import MessageHandler  # type: ignore
@@ -58,7 +58,7 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
     def __init__(self):
         """Initialize the exporter."""
         # List of existing types to prevent duplication.
-        self._existing_types: Set[str] = set()
+        self._existing_types: Dict[str, int] = {}
         self._existing_enums: Set[str] = set()
 
     def export(
@@ -255,9 +255,11 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
             else "".join(random.choice(string.ascii_lowercase) for _ in range(16))
         )
         if check_if_exists:
-            if type_name in self._existing_types:
-                return type_name, ""
-            self._existing_types.add(type_name)
+            if type_name not in self._existing_types:
+                self._existing_types[type_name] = 0
+            else:
+                self._existing_types[type_name] += 1
+                type_name += f"_{self._existing_types[type_name]}"
 
         gen = (
             "\n\n"
