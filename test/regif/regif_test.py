@@ -5,13 +5,13 @@ __authors__ = ["Marek Pikuła <marek.pikula at embevity.com>"]
 import pytest
 
 from peakrdl_python_simple.regif import __main__ as test_classes
-from peakrdl_python_simple.regif.regif import DummyRegIf
+from peakrdl_python_simple.regif.impl.dummy import DummyRegIf
 
 
 @pytest.fixture
 def test_regif():
     """Create register interface."""
-    return DummyRegIf(8 * 4, range(0, 0x1000), 0)
+    return DummyRegIf(8 * 4, range(0, 0x1000), 0, trace=True)
 
 
 @pytest.fixture

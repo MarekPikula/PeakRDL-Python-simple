@@ -3,7 +3,7 @@
 from enum import IntEnum
 
 from .access import FieldAccess, RegAccess
-from .regif import DummyRegIf
+from .impl.dummy import DummyRegIf
 from .spec import FieldNodeSpec, RegNodeSpec
 
 
@@ -70,7 +70,7 @@ class TestReg(RegAccess):
 
 
 if __name__ == "__main__":
-    test_reg = TestReg(DummyRegIf(4 * 8, range(0, 0x1000), 0))
+    test_reg = TestReg(DummyRegIf(4 * 8, range(0, 0x1000), 0, trace=True))
 
     # Simple read using TestEnum.
     print(test_reg.test_field)
