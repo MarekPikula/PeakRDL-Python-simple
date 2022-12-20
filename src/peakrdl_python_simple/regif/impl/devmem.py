@@ -57,15 +57,20 @@ class DevmemRegIf(RegisterInterface):
         Returns:
             Data from the register.
         """
-        super().get(reg_address)
-        return int(
-            subprocess.run(
-                [*self._cmd, f"0x{reg_address:X}", str(self._data_width)],
-                capture_output=True,
-                check=True,
-            ).stdout.strip(),
-            0,
-        )
+        super()._get(reg_address)
+        try:
+            return int(
+                subprocess.run(
+                    [*self._cmd, f"0x{reg_address:X}", str(self._data_width)],
+                    capture_output=True,
+                    check=True,
+                ).stdout.strip(),
+                0,
+            )
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError(
+                f"Failed to execute devmem get command for register 0x{reg_address:X}."
+            ) from exc
 
     def set(self, reg_address: int, value: int) -> None:
         """Write register using `devmem`.
@@ -76,8 +81,18 @@ class DevmemRegIf(RegisterInterface):
             reg_address -- absolute address of register to write to.
             value -- value to write to the register.
         """
-        super().set(reg_address, value)
-        subprocess.run(
-            [*self._cmd, f"0x{reg_address:X}", str(self._data_width), f"0x{value:X}"],
-            check=True,
-        )
+        super()._set(reg_address, value)
+        try:
+            subprocess.run(
+                [
+                    *self._cmd,
+                    f"0x{reg_address:X}",
+                    str(self._data_width),
+                    f"0x{value:X}",
+                ],
+                check=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError(
+                f"Failed to execute devmem set command for register 0x{reg_address:X} = 0x{value:X}."
+            ) from exc
