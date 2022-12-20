@@ -22,10 +22,12 @@ packages = [
 python = "^3.7.2"
 systemrdl-compiler = { version = "^1.25.0", optional = true }
 peakrdl = { version = "^0.3.0", optional = true }
+loguru = { version = "^0.6.0", optional = true }
 
 [tool.poetry.extras]
 generator = ["systemrdl-compiler"]
 cli = ["peakrdl", "systemrdl-compiler"]
+tracing = ["loguru"]
 
 [tool.poetry.group.dev.dependencies]
 peakrdl = "^0.3.0"
