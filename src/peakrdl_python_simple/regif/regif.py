@@ -5,7 +5,7 @@ __authors__ = ["Marek Pikuła <marek.pikula at embevity.com>"]
 import sys
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from typing import Dict, Optional
+from typing import Optional
 
 try:
     from loguru import logger
@@ -21,7 +21,7 @@ class RegisterInterface(ABC):
     A basic register interface requires overriding `get()` and `set()`
     functions, depending on underlying hardware configuration.
 
-    As an example implementation `DummyRegIf` is available.
+    Example implementation can be found in the `impl` submodule.
     """
 
     def __init__(
@@ -275,52 +275,3 @@ class RegisterInterface(ABC):
             self._Operation.SET, reg_address, value, field_pos, field_width
         )
         self.set(reg_address, prev_reg_value | (value << field_pos))
-
-
-class DummyRegIf(RegisterInterface):
-    """Example implementation of RegisterInterface.
-
-    It stores the register file in memory as dictionary.
-    """
-
-    def __init__(
-        self, data_width: int, address_bounds: Optional[range], reset_value: int = 0
-    ):
-        """Initialize the dummy register interface.
-
-        Arguments:
-            data_width -- width of data in bits, should be divisible by 8.
-
-        Keyword Arguments:
-            address_bounds -- address range, which is allowed by this register
-                interface. If not defined, addresses are not validated if they
-                are in range.
-            reset_value -- default value present in the register on "reset".
-        """
-        super().__init__(data_width, address_bounds)
-        self._values: Dict[int, int] = {}
-        self._reset_value = reset_value
-
-    def get(self, reg_address: int) -> int:
-        """Get value from register.
-
-        Arguments:
-            reg_address -- absolute register address.
-
-        Returns:
-            Register value.
-        """
-        super().get(reg_address)
-        if reg_address not in self._values:
-            return self._reset_value
-        return self._values[reg_address]
-
-    def set(self, reg_address: int, value: int):
-        """Set register value.
-
-        Arguments:
-            reg_address -- absolute register address.
-            value -- value to write to the register.
-        """
-        super().set(reg_address, value)
-        self._values[reg_address] = value

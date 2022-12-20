@@ -9,7 +9,7 @@ from systemrdl import RDLCompiler  # type: ignore
 
 from example.accelera_generic_example import SomeRegisterMapAddrmap
 from peakrdl_python_simple.exporter import PythonExporter
-from peakrdl_python_simple.regif.regif import DummyRegIf
+from peakrdl_python_simple.regif.impl.dummy import DummyRegIf
 
 
 def test_exporter_basic():
@@ -46,7 +46,7 @@ def test_exporter_basic():
 @pytest.fixture
 def test_regif():
     """Create register interface."""
-    return DummyRegIf(8 * 4, range(0, 0x1000), 0)
+    return DummyRegIf(8 * 4, range(0, 0x1000), 0, trace=True)
 
 
 def test_exporter_regif(test_regif: DummyRegIf):
