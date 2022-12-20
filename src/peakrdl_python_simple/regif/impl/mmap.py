@@ -51,7 +51,7 @@ class MmapRegIf(RegisterInterface):
         if hasattr(self, "_mem_file"):
             self._mem_file.close()
 
-    def get(self, reg_address: int) -> int:
+    def _get(self, reg_address: int) -> int:
         """Get value from register.
 
         Arguments:
@@ -60,17 +60,15 @@ class MmapRegIf(RegisterInterface):
         Returns:
             Register value.
         """
-        super().get(reg_address)
         self._mmap.seek(reg_address - self._address_bounds.start)
         return int.from_bytes(self._mmap.read(self._data_bytes), "little")
 
-    def set(self, reg_address: int, value: int):
+    def _set(self, reg_address: int, value: int):
         """Set register value.
 
         Arguments:
             reg_address -- absolute register address.
             value -- value to write to the register.
         """
-        super().set(reg_address, value)
         self._mmap.seek(reg_address - self._address_bounds.start)
         self._mmap.write(value.to_bytes(self._data_bytes, "little", signed=False))

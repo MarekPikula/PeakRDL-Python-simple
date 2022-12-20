@@ -79,7 +79,7 @@ class MultiRegionRegIf(RegisterInterface):
                 return regif
         raise ValueError(f"The address {reg_address} isn't assigned to any sub-region.")
 
-    def get(self, reg_address: int) -> int:
+    def _get(self, reg_address: int) -> int:
         """Get value from register.
 
         Arguments:
@@ -88,15 +88,13 @@ class MultiRegionRegIf(RegisterInterface):
         Returns:
             Register value.
         """
-        super().get(reg_address)
         return self._address_to_region(reg_address).get(reg_address)
 
-    def set(self, reg_address: int, value: int):
+    def _set(self, reg_address: int, value: int):
         """Set register value.
 
         Arguments:
             reg_address -- absolute register address.
             value -- value to write to the register.
         """
-        super().set(reg_address, value)
         self._address_to_region(reg_address).set(reg_address, value)

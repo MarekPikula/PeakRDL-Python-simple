@@ -4,6 +4,7 @@ __authors__ = ["Marek Pikuła <marek.pikula at embevity.com>"]
 
 import sys
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional
 
@@ -89,11 +90,35 @@ class RegisterInterface(ABC):
             )
         self._trace_active = trace and LOGURU_ACTIVE
 
+    @dataclass(frozen=True)
+    class _FieldSpec:
+        """Field specification used for internal functions."""
+
+        pos: int
+        """Field position in bits (bit shift value)."""
+
+        width: int
+        """Field width in bits."""
+
+        data_width: int
+        """Data width of the register interface."""
+
+        def __post_init__(self):
+            if not 0 <= self.pos < self.data_width:
+                raise ValueError(
+                    f"Field position ({self.pos}) should be positive and within the data width."
+                )
+
+            if not 0 < self.width > self.data_width:
+                raise ValueError(
+                    f"Field width ({self.width}) should not be bigger than"
+                    f"register width ({self.data_width}) but at least 1."
+                )
+
     def _sanitize_field_args(
         self,
         reg_address: int,
-        field_pos: Optional[int] = None,
-        field_width: Optional[int] = None,
+        field: Optional[_FieldSpec] = None,
         value: Optional[int] = None,
     ):
         """General argument sanitizer used both for register and field access.
@@ -105,8 +130,7 @@ class RegisterInterface(ABC):
             reg_address -- register address.
 
         Keyword Arguments:
-            field_pos -- field position.
-            field_width -- field width in bits.
+            field -- field specification.
             value -- value of register or field.
 
         Raises:
@@ -120,21 +144,8 @@ class RegisterInterface(ABC):
                 f"Register address 0x{reg_address:X} not in register interface allowed range."
             )
 
-        if field_pos is not None and field_pos < 0:
-            raise ValueError(f"Field position ({field_pos}) should be positive.")
-
-        if field_width is not None and field_width > self.data_width:
-            raise ValueError(
-                f"Field width ({field_width}) should not be bigger than"
-                f"register width ({self.data_width})."
-            )
-
         # If field use field_width otherwise use register data_width.
-        bits = (
-            field_width
-            if field_pos is not None and field_width is not None
-            else self.data_width
-        )
+        bits = field.width if field is not None else self.data_width
         if value is not None and value & ((1 << bits) - 1) != value:
             raise ValueError(
                 f"Register/field value (0x{value:X}) wider than "
@@ -158,21 +169,19 @@ class RegisterInterface(ABC):
                 return "<-"
             raise NotImplementedError("Unknown operation direction.")
 
-    def _trace_field(  # pylint: disable=too-many-arguments
+    def _trace(
         self,
         operation: _Operation,
         reg_address: int,
         value: int,
-        field_pos: int,
-        field_width: int,
+        field: Optional[_FieldSpec] = None,
     ):
         """Add logger trace for the field operation."""
         if self._trace_active:
             logger.trace(
-                "regif: 0x{:X}[{:2}:{:2}] {} 0x{:X}",
+                "regif: 0x{:X}{:7} {} 0x{:X}",
                 reg_address,
-                field_pos + field_width - 1,
-                field_pos,
+                "" if field is None else f"[{field.pos + field.width - 1}:{field.pos}]",
                 operation.get_arrow(),
                 value,
             )
@@ -188,10 +197,16 @@ class RegisterInterface(ABC):
         return self._address_bounds
 
     @abstractmethod
+    def _get(self, reg_address: int) -> int:
+        """Read register value abstraction."""
+        return 0
+
+    @abstractmethod
+    def _set(self, reg_address: int, value: int) -> None:
+        """Write register value abstraction."""
+
     def get(self, reg_address: int) -> int:
         """Read register value abstraction.
-
-        `super().get(reg_address)` should be called to validate aruments.
 
         Arguments:
             reg_address -- absolute address of register to read.
@@ -200,19 +215,20 @@ class RegisterInterface(ABC):
             Data from the register.
         """
         self._sanitize_field_args(reg_address)
-        return 0
+        ret = self._get(reg_address)
+        self._trace(self._Operation.GET, reg_address, ret)
+        return ret
 
-    @abstractmethod
     def set(self, reg_address: int, value: int) -> None:
         """Write register value abstraction.
-
-        `super().set(reg_address, value)` should be called to validate aruments.
 
         Arguments:
             reg_address -- absolute address of register to write to.
             value -- value to write to the register.
         """
         self._sanitize_field_args(reg_address, value=value)
+        self._trace(self._Operation.SET, reg_address, value)
+        self._set(reg_address, value)
 
     def get_field(self, reg_address: int, field_pos: int, field_width: int) -> int:
         """Read register field abstraction.
@@ -231,9 +247,11 @@ class RegisterInterface(ABC):
         Returns:
             Value in given field in given register.
         """
-        self._sanitize_field_args(reg_address, field_pos, field_width)
+        field = self._FieldSpec(field_pos, field_width, self.data_width)
+        self._sanitize_field_args(reg_address, field)
+
         ret = (self.get(reg_address) >> field_pos) & ((1 << field_width) - 1)
-        self._trace_field(self._Operation.GET, reg_address, ret, field_pos, field_width)
+        self._trace(self._Operation.GET, reg_address, ret, field)
         return ret
 
     def set_field(  # pylint: disable=too-many-arguments
@@ -261,17 +279,14 @@ class RegisterInterface(ABC):
         Keyword Arguments:
             ignore_other_fields -- if set to True, other fields current values are ignored.
         """
-        self._sanitize_field_args(reg_address, field_pos, field_width, value)
+        field = self._FieldSpec(field_pos, field_width, self.data_width)
+        self._sanitize_field_args(reg_address, field, value)
 
         field_negative_mask = ((1 << self.data_width) - 1) ^ (
             ((1 << field_width) - 1) << field_pos
         )
         prev_reg_value = (
-            0
-            if ignore_other_fields
-            else self.get_field(reg_address, 0, self.data_width) & field_negative_mask
+            0 if ignore_other_fields else self.get(reg_address) & field_negative_mask
         )
-        self._trace_field(
-            self._Operation.SET, reg_address, value, field_pos, field_width
-        )
+        self._trace(self._Operation.SET, reg_address, value, field)
         self.set(reg_address, prev_reg_value | (value << field_pos))

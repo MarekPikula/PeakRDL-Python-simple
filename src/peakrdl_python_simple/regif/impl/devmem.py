@@ -46,7 +46,7 @@ class DevmemRegIf(RegisterInterface):
                 f"Execution check of devmem command ({devmem_command}) failed."
             ) from exc
 
-    def get(self, reg_address: int) -> int:
+    def _get(self, reg_address: int) -> int:
         """Read register value with `devmem`.
 
         TODO: Sanitize command output.
@@ -57,7 +57,6 @@ class DevmemRegIf(RegisterInterface):
         Returns:
             Data from the register.
         """
-        super()._get(reg_address)
         try:
             return int(
                 subprocess.run(
@@ -72,7 +71,7 @@ class DevmemRegIf(RegisterInterface):
                 f"Failed to execute devmem get command for register 0x{reg_address:X}."
             ) from exc
 
-    def set(self, reg_address: int, value: int) -> None:
+    def _set(self, reg_address: int, value: int) -> None:
         """Write register using `devmem`.
 
         TODO: Sanitize command output.
@@ -81,7 +80,6 @@ class DevmemRegIf(RegisterInterface):
             reg_address -- absolute address of register to write to.
             value -- value to write to the register.
         """
-        super()._set(reg_address, value)
         try:
             subprocess.run(
                 [

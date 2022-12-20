@@ -36,7 +36,7 @@ class DummyRegIf(RegisterInterface):
         self._values: Dict[int, int] = {}
         self._reset_value = reset_value
 
-    def get(self, reg_address: int) -> int:
+    def _get(self, reg_address: int) -> int:
         """Get value from register.
 
         Arguments:
@@ -45,17 +45,15 @@ class DummyRegIf(RegisterInterface):
         Returns:
             Register value.
         """
-        super().get(reg_address)
         if reg_address not in self._values:
             return self._reset_value
         return self._values[reg_address]
 
-    def set(self, reg_address: int, value: int):
+    def _set(self, reg_address: int, value: int):
         """Set register value.
 
         Arguments:
             reg_address -- absolute register address.
             value -- value to write to the register.
         """
-        super().set(reg_address, value)
         self._values[reg_address] = value
