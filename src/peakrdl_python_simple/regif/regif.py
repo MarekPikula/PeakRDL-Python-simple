@@ -109,7 +109,7 @@ class RegisterInterface(ABC):
                     f"Field position ({self.pos}) should be positive and within the data width."
                 )
 
-            if not 0 < self.width > self.data_width:
+            if not 0 < self.width <= self.data_width:
                 raise ValueError(
                     f"Field width ({self.width}) should not be bigger than"
                     f"register width ({self.data_width}) but at least 1."
