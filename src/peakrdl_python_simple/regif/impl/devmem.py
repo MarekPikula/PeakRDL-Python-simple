@@ -92,5 +92,6 @@ class DevmemRegIf(RegisterInterface):
             )
         except subprocess.CalledProcessError as exc:
             raise RuntimeError(
-                f"Failed to execute devmem set command for register 0x{reg_address:X} = 0x{value:X}."
+                "Failed to execute devmem set command for register "
+                f"0x{reg_address:X} = 0x{value:X}."
             ) from exc
