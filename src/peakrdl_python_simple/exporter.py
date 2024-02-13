@@ -251,9 +251,11 @@ class PythonExporter:  # pylint: disable=too-few-public-methods
         """
         node_type = node.__class__.__name__.replace("Node", "")
         base_type_name = self._to_pascal_case(
-            node.type_name
-            if node.type_name is not None
-            else "".join(random.choice(string.ascii_lowercase) for _ in range(16)),
+            (
+                node.type_name
+                if node.type_name is not None
+                else "".join(random.choice(string.ascii_lowercase) for _ in range(16))
+            ),
             node_type,
         )
         type_name = base_type_name
